@@ -34,6 +34,10 @@ oldnames_cw <- names(rice_cw)
 newnames_cw <- c('Timestamp','Min_cw','Min_Time_cw','Max_cw','Max_Time_cw','Avg_cw','Interpolative_cw')
 setnames(rice_cw, oldnames_cw, newnames_cw)
 
+rice <- merge(rice_e, rice_hw, by = 'Timestamp')
+rice <- merge(rice, rice_cw, by = 'Timestamp')
+
+
 """
 read_build <- function(building, path){
   library(readxl)
