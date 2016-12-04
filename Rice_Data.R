@@ -12,6 +12,19 @@ rice_e <- rice_e[complete.cases(rice_e),]
 rice_hw <- rice_hw[complete.cases(rice_hw),]
 rice_cw <- rice_cw[complete.cases(rice_cw),]
 
+# keep necessary columns
+keep <- c('Timestamp','Min_Value','Min_Timestamp','Max_Value','Max_Timestamp',
+          'Avg_Value',"INTERPOLATIVE_Value (Use this value - iit's a better average)",
+          'Total_Value')
+
+rice_e <- rice_e[, names(rice_e) %in% keep]
+rice_hw <- rice_hw[, names(rice_hw) %in% keep]
+rice_cw <- rice_cw[, names(rice_cw) %in% keep]
+
+
+
+
+
 """
 read_build <- function(building, path){
   library(readxl)
