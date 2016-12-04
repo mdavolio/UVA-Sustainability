@@ -71,3 +71,7 @@ building <- function(path){
 
 rice <- building('Rice Hall 0214.xlsx')
 echols <- building('Echols 2213.xlsx')
+humphreys <- building('Humphreys 2214.xlsx')
+kellogg <- building('Kellogg 2368.xlsx')
+oHill_Din <- building('Ohill Dining 0201.xlsx')
+physics <- building('Physics 0221.xlsx')
