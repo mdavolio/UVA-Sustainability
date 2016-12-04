@@ -14,13 +14,11 @@ building <- function(path){
   cw <- cw[complete.cases(cw),]
   
   # keep necessary columns
-  keep <- c('Timestamp','Min_Value','Min_Timestamp','Max_Value','Max_Timestamp',
-            'Avg_Value',"INTERPOLATIVE_Value (Use this value - iit's a better average)",
-            'Total_Value')
+  keep <- c(1,2,4,5,7,8,10)
   
-  e <- e[, names(e) %in% keep]
-  hw <- hw[, names(hw) %in% keep]
-  cw <- cw[, names(cw) %in% keep]
+  e <- e[, keep]
+  hw <- hw[, keep]
+  cw <- cw[, keep]
   
   # rename columns for ease
   oldnames_e <- names(e)
@@ -42,3 +40,4 @@ building <- function(path){
 }
 
 rice <- building('Rice Hall 0214.xlsx')
+echols <- building('Echols 2213.xlsx')
