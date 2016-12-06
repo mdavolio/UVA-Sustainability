@@ -89,10 +89,10 @@ grabWeather <- function(path){
   
   # Read in files
   temp <- read_excel(path, sheet = 1) %>% 
-    subset(c(2,3,4,5,6,7))
+    select(c(2,3,4,5,6,7))
     
   humid <- read_excel(path, sheet = 2) %>% 
-    subset(c(2,3,4,5,6,7))
+    select(c(2,3,4,5,6,7))
   
   #wetbulb <- read_excel(path, sheet = 3) %>% 
     #subset(c(2,3,4,5,6,7))
