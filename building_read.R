@@ -4,6 +4,7 @@
 library(readxl)
 library(dplyr)
 library(purrr)
+library(data.table)
 
 building <- function(path){
  
@@ -84,17 +85,26 @@ physics <- building('Physics 0221.xlsx')
 #### Read Weather Data  ####
 ##############################
 
-weather <- function(path){
+grabWeather <- function(path){
   
   # Read in files
-  temp <- read_excel(path, sheet = 1) # Temperature
-  humid <- read_excel(path, sheet = 2) # Humidity
-  wetbulb <- read_excel(path, sheet = 3) # WetBuldTemp
+  temp <- read_excel(path, sheet = 1) %>% 
+    subset(c(2,3,4,5,6,7))
+    
+  humid <- read_excel(path, sheet = 2) %>% 
+    subset(c(2,3,4,5,6,7))
   
-  # keep necessary columns
-  keep <- c(1,2,4,5,7,8,10)
+  #wetbulb <- read_excel(path, sheet = 3) %>% 
+    #subset(c(2,3,4,5,6,7))
   
+  names(temp) <- c('Timestamp', 'Min_T', 'Max_T', 'Avg_T', 'INTERPOLATIVE_T', 'AvgSPH_T')
+  names(humid) <- c('Timestamp', 'Min_H', 'Max_H', 'Avg_H', 'INTERPOLATIVE_H', 'AvgSPH_H') 
+  #names(wetbulb) <- c('Timestamp', 'Min_W', 'Max_W', 'Avg_W', 'INTERPOLATIVE_W', 'AvgSPH_W')
 
+  merged <- merge(temp,humid, by = "Timestamp", all = TRUE)
+  
+  return(merged) 
+}
 
-
+weather <- grabWeather('OA Data.xlsx')
 
