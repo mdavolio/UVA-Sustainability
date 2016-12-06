@@ -1,8 +1,12 @@
-# Read Builiding Data
+##############################
+#### Read Builiding Data  ####
+##############################
+library(readxl)
+library(dplyr)
+library(purrr)
 
 building <- function(path){
-  library(readxl)
-  
+ 
   if(length(excel_sheets(path)) == 3){
     # Read in Files
     e <- read_excel(path, sheet = 1) # Electricity
@@ -75,3 +79,22 @@ humphreys <- building('Humphreys 2214.xlsx')
 kellogg <- building('Kellogg 2368.xlsx')
 oHill_Din <- building('Ohill Dining 0201.xlsx')
 physics <- building('Physics 0221.xlsx')
+
+##############################
+#### Read Weather Data  ####
+##############################
+
+weather <- function(path){
+  
+  # Read in files
+  temp <- read_excel(path, sheet = 1) # Temperature
+  humid <- read_excel(path, sheet = 2) # Humidity
+  wetbulb <- read_excel(path, sheet = 3) # WetBuldTemp
+  
+  # keep necessary columns
+  keep <- c(1,2,4,5,7,8,10)
+  
+
+
+
+
