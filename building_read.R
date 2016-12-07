@@ -1,10 +1,24 @@
-##############################
-#### Read Builiding Data  ####
-##############################
+#####################################
+##### Read Building Info Data  ######
+#####################################
 library(readxl)
 library(dplyr)
 library(purrr)
 library(data.table)
+
+buildingInfo <- function(path){
+  # Read in file
+  df <- read_excel(path) %>% 
+    select(c(1,2,6,7,8,9))
+  names(df) <- c('buildingID','buildingName','square_foot','YearBuilt','ConstructionType','Category')
+  return(df) 
+}
+
+buildings <- buildingInfo('Basic Building Info.xlsx')
+
+#####################################
+#### Read Builiding Energy Data  ####
+#####################################
 
 building <- function(path){
  
@@ -75,20 +89,26 @@ building <- function(path){
 }
 
 rice <- building('Rice Hall 0214.xlsx') %>% 
-  mutate(buildingID = 0214)
+  mutate(buildingID = 0214) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 echols <- building('Echols 2213.xlsx') %>% 
-  mutate(buildingID = 2213)
+  mutate(buildingID = 2213) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 humphreys <- building('Humphreys 2214.xlsx') %>% 
-  mutate(buildingID = 2214)
+  mutate(buildingID = 2214) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 kellogg <- building('Kellogg 2368.xlsx') %>% 
-  mutate(buildingID = 2368)
+  mutate(buildingID = 2368) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
-  mutate(buildingID = 0201)
+  mutate(buildingID = 0201) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 physics <- building('Physics 0221.xlsx') %>% 
-  mutate(buildingID = 0221)
+  mutate(buildingID = 0221) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
 
 ##############################
-#### Read Weather Data  ####
+#### Read Weather Data  ######
 ##############################
 
 grabWeather <- function(path){
@@ -100,17 +120,15 @@ grabWeather <- function(path){
   humid <- read_excel(path, sheet = 2) %>% 
     select(c(2,3,4,5,6,7))
   
-  #wetbulb <- read_excel(path, sheet = 3) %>% 
-    #subset(c(2,3,4,5,6,7))
-  
   names(temp) <- c('Timestamp', 'Min_T', 'Max_T', 'Avg_T', 'INTERPOLATIVE_T', 'AvgSPH_T')
   names(humid) <- c('Timestamp', 'Min_H', 'Max_H', 'Avg_H', 'INTERPOLATIVE_H', 'AvgSPH_H') 
-  #names(wetbulb) <- c('Timestamp', 'Min_W', 'Max_W', 'Avg_W', 'INTERPOLATIVE_W', 'AvgSPH_W')
-
   merged <- merge(temp,humid, by = "Timestamp", all = TRUE)
   
   return(merged) 
 }
 
 weather <- grabWeather('OA Data.xlsx')
+
+
+
 
