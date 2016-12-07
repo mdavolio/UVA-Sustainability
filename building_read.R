@@ -69,6 +69,7 @@ building <- function(path){
     
     # merge
     final <- merge(e, s, by = 'Timestamp')
+
   }
   
   return(final)
@@ -108,3 +109,19 @@ grabWeather <- function(path){
 
 weather <- grabWeather('OA Data.xlsx')
 
+##########################
+#### Round Timestamps ####
+##########################
+
+# Function not working properly???
+"""
+ts_round <- function(df){
+  df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
+                                                       '%Y-%m-%d %H:%M:%S'))/900) * 900, 
+                             origin='1970-01-01')
+  return(df)
+}
+"""
+
+rice$Timestamp <- as.POSIXct(round(as.numeric(strptime(rice$Timestamp, 
+                                                     '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
