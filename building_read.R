@@ -74,12 +74,18 @@ building <- function(path){
   return(final)
 }
 
-rice <- building('Rice Hall 0214.xlsx')
-echols <- building('Echols 2213.xlsx')
-humphreys <- building('Humphreys 2214.xlsx')
-kellogg <- building('Kellogg 2368.xlsx')
-oHill_Din <- building('Ohill Dining 0201.xlsx')
-physics <- building('Physics 0221.xlsx')
+rice <- building('Rice Hall 0214.xlsx') %>% 
+  mutate(buildingID = 0214)
+echols <- building('Echols 2213.xlsx') %>% 
+  mutate(buildingID = 2213)
+humphreys <- building('Humphreys 2214.xlsx') %>% 
+  mutate(buildingID = 2214)
+kellogg <- building('Kellogg 2368.xlsx') %>% 
+  mutate(buildingID = 2368)
+oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
+  mutate(buildingID = 0201)
+physics <- building('Physics 0221.xlsx') %>% 
+  mutate(buildingID = 0221)
 
 ##############################
 #### Read Weather Data  ####
