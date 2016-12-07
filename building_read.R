@@ -21,7 +21,7 @@ buildings <- buildingInfo('Basic Building Info.xlsx')
 #####################################
 
 building <- function(path){
- 
+  
   if(length(excel_sheets(path)) == 3){
     # Read in Files
     e <- read_excel(path, sheet = 1) # Electricity
@@ -116,7 +116,7 @@ grabWeather <- function(path){
   # Read in files
   temp <- read_excel(path, sheet = 1) %>% 
     select(c(2,3,4,5,6,7))
-    
+  
   humid <- read_excel(path, sheet = 2) %>% 
     select(c(2,3,4,5,6,7))
   
@@ -129,6 +129,23 @@ grabWeather <- function(path){
 
 weather <- grabWeather('OA Data.xlsx')
 
+##########################
+#### Round Timestamps ####
+##########################
+# Rounds timestamps to nearest quarter hour
 
+ts_round <- function(df){
+  df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
+                                                       '%Y-%m-%d %H:%M:%S'))/900) * 900, 
+                             origin='1970-01-01')
+  return(df)
+}
 
+rice <- ts_round(rice)
+echols <- ts_round(echols)
+humphreys <- ts_round(humphreys)
+kellogg <- ts_round(kellogg)
+oHill_Din <- ts_round(oHill_Din)
+physics <- ts_round(physics)
+weather <- ts_round(weather)
 
