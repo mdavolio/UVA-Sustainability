@@ -1,15 +1,14 @@
 #####################################
 ########## sustain_read.R ###########
 #####################################
-setwd("/Users/Kerry/Documents/UVA-DSI/Fall/SYS6018_Data_Mining/UVA-Sustainability/")
-library(readxl)
-library(dplyr)
-library(purrr)
-library(data.table)
 
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
 
+library(readxl)
+library(dplyr)
+library(purrr)
+library(data.table)
 
 #### Round Timestamps ####
 
