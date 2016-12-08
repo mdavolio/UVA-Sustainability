@@ -21,7 +21,6 @@ ts_round <- function(df){
 }
 
 
-
 #### Read Building Info Data ####
 
 buildingInfo <- function(path){
