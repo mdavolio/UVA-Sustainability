@@ -88,6 +88,7 @@ building <- function(path){
   return(final)
 }
 
+
 rice <- building('Rice Hall 0214.xlsx') %>% 
   mutate(buildingID = 0214) %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE)
@@ -133,19 +134,31 @@ weather <- grabWeather('OA Data.xlsx')
 #### Round Timestamps ####
 ##########################
 # Rounds timestamps to nearest quarter hour
+# Finds day of week
 
-ts_round <- function(df){
+ts_convert <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
-                                                       '%Y-%m-%d %H:%M:%S'))/900) * 900, 
-                             origin='1970-01-01')
+                                                       '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
+  df$DayOfWeek<-as.POSIXlt(df$Timestamp)$wday + 1
   return(df)
 }
 
-rice <- ts_round(rice)
-echols <- ts_round(echols)
-humphreys <- ts_round(humphreys)
-kellogg <- ts_round(kellogg)
-oHill_Din <- ts_round(oHill_Din)
-physics <- ts_round(physics)
-weather <- ts_round(weather)
+rice <- ts_convert(rice)
+echols <- ts_convert(echols)
+humphreys <- ts_convert(humphreys)
+kellogg <- ts_convert(kellogg)
+oHill_Din <- ts_convert(oHill_Din)
+physics <- ts_convert(physics)
+weather <- ts_convert(weather)
+
+
+#?seq.Date
+
+#winter2013<-seq(as.Date("2013-12-17"),as.Date("2014-01-10"), "day" )
+#summer2014<-seq(as.Date("2014-05-19"),as.Date("2014-08-26"), "day" )
+
+#x = as.Date(rice$Timestamp)
+
+               
+#test<-ifelse(x == winter2013,1,0)
 

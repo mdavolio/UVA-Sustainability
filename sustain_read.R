@@ -1,6 +1,7 @@
 #####################################
 ########## sustain_read.R ###########
 #####################################
+setwd("/Users/Kerry/Documents/UVA-DSI/Fall/SYS6018_Data_Mining/UVA-Sustainability/")
 library(readxl)
 library(dplyr)
 library(purrr)
@@ -19,6 +20,7 @@ ts_round <- function(df){
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
   return(df)
 }
+
 
 
 #### Read Building Info Data ####
