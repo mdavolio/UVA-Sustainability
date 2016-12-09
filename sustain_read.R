@@ -21,6 +21,28 @@ ts_round <- function(df){
   return(df)
 }
 
+#### Sum Energy Consumption ####
+
+## first grab the hour from the timestamp
+energy <- function(df) {
+  if (ncol(df) == 26) {
+    mutate(df, Hour = hour(df$Timestamp)) %>% 
+      mutate(Date = format(Timestamp,"%Y-%m-%d")) %>% 
+      group_by(buildingID,Date,Hour) %>% 
+      summarise(electricity = sum(Interpolative_e), hot_water=sum(Interpolative_hw), cold_water=sum(Interpolative_cw)) %>% 
+      mutate(total_energy = electricity+hot_water+cold_water) -> df
+    return(df)
+  }
+  else {
+    mutate(df, Hour = hour(df$Timestamp)) %>% 
+      mutate(Date = format(Timestamp,"%Y-%m-%d")) %>% 
+      group_by(buildingID,Date,Hour) %>% 
+      summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s)) %>% 
+      mutate(total_energy = electricity+steam) -> df
+    return(df)
+  }
+}
+
 
 #### Read Building Info Data ####
 
