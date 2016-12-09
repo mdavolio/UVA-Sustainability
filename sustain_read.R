@@ -9,6 +9,7 @@ library(readxl)
 library(dplyr)
 library(purrr)
 library(data.table)
+library(lubridate)
 
 #### Round Timestamps ####
 ts_round <- function(df){
@@ -18,9 +19,7 @@ ts_round <- function(df){
   return(df)
 }
 
-<<<<<<< HEAD
 #### Sum Energy Consumption ####
-
 ## first grab the hour from the timestamp
 energy <- function(df) {
   if (ncol(df) == 26) {
@@ -41,9 +40,6 @@ energy <- function(df) {
   }
 }
 
-
-=======
->>>>>>> adc66fc4e99001a2832777e5dbb8d1885499243e
 #### Read Building Info Data ####
 buildingInfo <- function(path){
   # Read in file
@@ -157,6 +153,7 @@ building <- function(path){
   return(final)
 }
 
+# Function for all functions
 read_build <- function(path, bID){
   df <- building(path) %>%
     mutate(buildingID = bID) %>% 
