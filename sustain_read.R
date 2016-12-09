@@ -4,13 +4,13 @@
 
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
-
-library(readxl)
-library(dplyr)
-library(purrr)
-library(data.table)
+suppressPackageStartupMessages(
+library(readxl),
+library(dplyr),
+library(purrr),
+library(data.table),
 library(lubridate)
-
+)
 #### Round Timestamps ####
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
@@ -176,7 +176,10 @@ gooch <- read_build('Gooch 382 2382.xlsx', '2382')
 mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
 matSci <- read_build('Materials Science 0270.xlsx', '0270')
 pav <- read_build('Pav VII 0022.xlsx', '0022')
-  
+
+#### Combine into one data frame ####
+final <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
+
 #### Read Weather Data  ######
 
 grabWeather <- function(path){
@@ -204,5 +207,4 @@ grabWeather <- function(path){
 weather <- grabWeather('OA Data.xlsx')
 
 ####### MERGE WEATHER AND BUILDINGS #########
-
 final_2 <- merge(final, weather, x.all = T)
