@@ -195,7 +195,11 @@ grabWeather <- function(path){
   merged$Timestamp <- as.POSIXct(round(as.numeric(strptime(merged$Timestamp, 
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
   
-  return(merged) 
+  merged <- mutate(merged, Hour = hour(merged$Timestamp)) %>% 
+            mutate(Date = format(merged$Timestamp,"%Y-%m-%d"))
+  
+  
+  return(merged)
 }
 
 weather <- grabWeather('OA Data.xlsx')
