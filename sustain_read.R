@@ -11,9 +11,6 @@ library(purrr)
 library(data.table)
 
 #### Round Timestamps ####
-
-# Function to rounds timestamps to nearest quarter hour
-
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
@@ -21,9 +18,7 @@ ts_round <- function(df){
   return(df)
 }
 
-
 #### Read Building Info Data ####
-
 buildingInfo <- function(path){
   # Read in file
   df <- read_excel(path) %>% 
@@ -68,8 +63,6 @@ session <- function(df){
 }
 
 ##### Read Builiding Energy Data  #####
-
-
 building <- function(path){
   
   if(length(excel_sheets(path)) == 3){
@@ -138,67 +131,26 @@ building <- function(path){
   return(final)
 }
 
+read_build <- function(path, bID){
+  df <- building(path) %>%
+    mutate(buildingID = bID) %>% 
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    ts_round() %>%
+    session()
+}
 
-rice <- building('Rice Hall 0214.xlsx') %>%
-  mutate(buildingID = '0214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-echols <- building('Echols 2213.xlsx') %>% 
-  mutate(buildingID = '2213') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-humphreys <- building('Humphreys 2214.xlsx') %>% 
-  mutate(buildingID = '2214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-kellogg <- building('Kellogg 2368.xlsx') %>% 
-  mutate(buildingID = '2368') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
-  mutate(buildingID = '0201') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()%>%
-  session()
-physics <- building('Physics 0221.xlsx') %>% 
-  mutate(buildingID = '0221') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-afc <- building('AFC 5271.xlsx') %>% 
-  mutate(buildingID = '5271') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-gilmer <- building('Gilmer 0210.xlsx') %>% 
-  mutate(buildingID = '0210') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-gooch <- building('Gooch 382 2382.xlsx') %>% 
-  mutate(buildingID = '2382') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-mechEng <- building('Mech Eng 0259.xlsx') %>% 
-  mutate(buildingID = '0259') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-matSci <- building('Materials Science 0270.xlsx') %>% 
-  mutate(buildingID = '0270') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
-pav <- building('Pav VII 0022.xlsx') %>% 
-  mutate(buildingID = '0022') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round() %>%
-  session()
+rice <- read_build('Rice Hall 0214.xlsx','0214')
+echols <- read_build('Echols 2213.xlsx','2213')
+humphreys <- read_build('Humphreys 2214.xlsx','2214')
+kellogg <- read_build('Kellogg 2368.xlsx', '2214')
+oHill_Din <- read_build('Ohill Dining 0201.xlsx', '0201')
+physics <- read_build('Physics 0221.xlsx', '0221')
+afc <- read_build('AFC 5271.xlsx', '5271')
+gilmer <- read_build('Gilmer 0210.xlsx', '0210')
+gooch <- read_build('Gooch 382 2382.xlsx', '2382')
+mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
+matSci <- read_build('Materials Science 0270.xlsx', '0270')
+pav <- read_build('Pav VII 0022.xlsx', '0022')
   
 #### Read Weather Data  ######
 
