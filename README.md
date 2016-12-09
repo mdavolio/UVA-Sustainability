@@ -8,7 +8,6 @@ Cleaning:
 2. Create Dummy Var for school in session
   (only last day of finals to first day of semester)
 3. Sum up energy sources to convert to co2
-4. Extract Variables of interest from building_info.xlsx
 
 Buildings: 
   Currently Have:
@@ -18,10 +17,10 @@ Buildings:
     OHill
     Physics
     Rice
-   To Request:
     AFC
     Gilmer
     Gooch 382
     Material Science
     Mechanical Engineering
+  To Request: N/A
     
