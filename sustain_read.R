@@ -34,6 +34,38 @@ buildingInfo <- function(path){
 
 buildings <- buildingInfo('Basic Building Info.xlsx')
 
+##### convert start and end dates of semester to numeric
+session <- function(df){
+  start_F13 <- as.numeric(as.POSIXct("08/27/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F13 <- as.numeric(as.POSIXct("12/18/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S14 <- as.numeric(as.POSIXct("01/13/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S14 <- as.numeric(as.POSIXct("05/10/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F14 <- as.numeric(as.POSIXct("08/26/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F14 <- as.numeric(as.POSIXct("12/17/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S15 <- as.numeric(as.POSIXct("01/12/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S15 <- as.numeric(as.POSIXct("05/09/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F15 <- as.numeric(as.POSIXct("08/25/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F15 <- as.numeric(as.POSIXct("12/19/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S16 <- as.numeric(as.POSIXct("01/20/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S16 <- as.numeric(as.POSIXct("05/14/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F16 <- as.numeric(as.POSIXct("08/23/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F16 <- as.numeric(as.POSIXct("12/17/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  
+  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
+  
+  df$semester <- ifelse((x < start_F13), 0, 
+                        ifelse((x < start_S14 & x > end_F13), 0, 
+                               ifelse((x < start_F14 & x > end_S14), 0,
+                                      ifelse((x < start_S15 & x > end_F14), 0,
+                                             ifelse((x < start_F15 & x > end_S15), 0,
+                                                    ifelse((x < start_S16 & x > end_F15), 0,
+                                                           ifelse((x < start_F16 & x > end_S16), 0,
+                                                                  ifelse((x < start_S17 & x > end_F16), 0, 1))))))))
+  
+  return(df)
+}
 
 ##### Read Builiding Energy Data  #####
 
@@ -110,52 +142,64 @@ building <- function(path){
 rice <- building('Rice Hall 0214.xlsx') %>%
   mutate(buildingID = '0214') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 echols <- building('Echols 2213.xlsx') %>% 
   mutate(buildingID = '2213') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 humphreys <- building('Humphreys 2214.xlsx') %>% 
   mutate(buildingID = '2214') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 kellogg <- building('Kellogg 2368.xlsx') %>% 
   mutate(buildingID = '2368') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
   mutate(buildingID = '0201') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round()%>%
+  session()
 physics <- building('Physics 0221.xlsx') %>% 
   mutate(buildingID = '0221') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 afc <- building('AFC 5271.xlsx') %>% 
   mutate(buildingID = '5271') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 gilmer <- building('Gilmer 0210.xlsx') %>% 
   mutate(buildingID = '0210') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 gooch <- building('Gooch 382 2382.xlsx') %>% 
   mutate(buildingID = '2382') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 mechEng <- building('Mech Eng 0259.xlsx') %>% 
   mutate(buildingID = '0259') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 matSci <- building('Materials Science 0270.xlsx') %>% 
   mutate(buildingID = '0270') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
+  ts_round() %>%
+  session()
 pav <- building('Pav VII 0022.xlsx') %>% 
   mutate(buildingID = '0022') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-
+  ts_round() %>%
+  session()
+  
 #### Read Weather Data  ######
 
 grabWeather <- function(path){
@@ -175,41 +219,3 @@ grabWeather <- function(path){
 }
 
 weather <- grabWeather('OA Data.xlsx')
-
-
-#?seq.Date
-
-#winter2013<-seq(as.Date("2013-12-17"),as.Date("2014-01-10"), "day" )
-#summer2014<-seq(as.Date("2014-05-19"),as.Date("2014-08-26"), "day" )
-
-#x = as.Date(rice$Timestamp)
-
-               
-#test<-ifelse(x == winter2013,1,0)
-ifelse((5>2),print(1),print(2))
-
-# convert start and end dates of semester to numeric
-session <- function(df){
-  start_F13 <- as.numeric(as.POSIXct("08/27/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F13 <- as.numeric(as.POSIXct("12/18/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S14 <- as.numeric(as.POSIXct("01/13/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S14 <- as.numeric(as.POSIXct("05/10/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F14 <- as.numeric(as.POSIXct("08/26/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F14 <- as.numeric(as.POSIXct("12/17/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S15 <- as.numeric(as.POSIXct("01/12/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S15 <- as.numeric(as.POSIXct("05/09/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F15 <- as.numeric(as.POSIXct("08/25/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F15 <- as.numeric(as.POSIXct("12/19/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S16 <- as.numeric(as.POSIXct("01/20/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S16 <- as.numeric(as.POSIXct("05/14/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F16 <- as.numeric(as.POSIXct("08/23/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F16 <- as.numeric(as.POSIXct("12/17/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  
-  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
-
-  df$semester <- ifelse((x < start_F13), 0, ifelse((x < start_S14 & x > end_F13), 0, )
-  
-  return(df)
-}
