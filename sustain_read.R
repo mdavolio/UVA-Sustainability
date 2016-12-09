@@ -116,21 +116,44 @@ echols <- building('Echols 2213.xlsx') %>%
   ts_round()
 humphreys <- building('Humphreys 2214.xlsx') %>% 
   mutate(buildingID = '2214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round()
 kellogg <- building('Kellogg 2368.xlsx') %>% 
   mutate(buildingID = '2368') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round()
 oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
   mutate(buildingID = '0201') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round()
 physics <- building('Physics 0221.xlsx') %>% 
   mutate(buildingID = '0221') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round()
-
+afc <- building('AFC 5271.xlsx') %>% 
+  mutate(buildingID = '5271') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
+gilmer <- building('Gilmer 0210.xlsx') %>% 
+  mutate(buildingID = '0210') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
+gooch <- building('Gooch 382 2382.xlsx') %>% 
+  mutate(buildingID = '2382') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
+mechEng <- building('Mech Eng 0259.xlsx') %>% 
+  mutate(buildingID = '0259') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
+matSci <- building('Materials Science 0270.xlsx') %>% 
+  mutate(buildingID = '0270') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
+pav <- building('Pav VII 0022.xlsx') %>% 
+  mutate(buildingID = '0022') %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+  ts_round()
 
 #### Read Weather Data  ######
 
