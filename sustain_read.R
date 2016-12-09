@@ -141,12 +141,12 @@ building <- function(path){
 
 rice <- building('Rice Hall 0214.xlsx') %>%
   mutate(buildingID = '0214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round() %>%
   session()
 echols <- building('Echols 2213.xlsx') %>% 
   mutate(buildingID = '2213') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
+  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
   ts_round() %>%
   session()
 humphreys <- building('Humphreys 2214.xlsx') %>% 
