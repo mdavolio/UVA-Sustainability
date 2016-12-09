@@ -22,22 +22,23 @@ ts_round <- function(df){
 #### Sum Energy Consumption ####
 ## first grab the hour from the timestamp
 energy <- function(df) {
-  if (ncol(df) == 26) {
-    mutate(df, Hour = hour(df$Timestamp)) %>% 
-      mutate(Date = format(Timestamp,"%Y-%m-%d")) %>% 
-      group_by(buildingID,Date,Hour) %>% 
-      summarise(electricity = sum(Interpolative_e), hot_water=sum(Interpolative_hw), cold_water=sum(Interpolative_cw)) %>% 
-      mutate(total_energy = electricity+hot_water+cold_water) -> df
-    return(df)
-  }
-  else {
-    mutate(df, Hour = hour(df$Timestamp)) %>% 
-      mutate(Date = format(Timestamp,"%Y-%m-%d")) %>% 
-      group_by(buildingID,Date,Hour) %>% 
-      summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s)) %>% 
-      mutate(total_energy = electricity+steam) -> df
-    return(df)
-  }
+  
+  df$Timestamp <- as.POSIXct(df$Timestamp)
+  try(
+    df <- mutate(df, Hour = hour(df$Timestamp)) %>% 
+          mutate(Date = format(df$Timestamp,"%Y-%m-%d")) %>% 
+          group_by(buildingID,Date,Hour) %>% 
+          summarise(electricity = sum(Interpolative_e), hot_water=sum(Interpolative_hw), cold_water=sum(Interpolative_cw)) %>% 
+          mutate(total_energy = electricity+hot_water+cold_water), silent = T
+  )
+  try(
+    df <- mutate(df, Hour = hour(df$Timestamp)) %>% 
+          mutate(Date = format(df$Timestamp,"%Y-%m-%d")) %>% 
+          group_by(buildingID,Date,Hour) %>% 
+          summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s)) %>% 
+          mutate(total_energy = electricity+steam), silent = T
+  )
+  return(df)
 }
 
 #### Read Building Info Data ####
@@ -70,7 +71,7 @@ session <- function(df){
   start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
   end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
   
-  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
+  x <- as.numeric(as.POSIXct(df$Date, '%Y-%m-%d'))
   
   df$semester <- ifelse((x < start_F13), 0, 
                         ifelse((x < start_S14 & x > end_F13), 0, 
@@ -156,9 +157,10 @@ building <- function(path){
 # Function for all functions
 read_build <- function(path, bID){
   df <- building(path) %>%
-    mutate(buildingID = bID) %>% 
-    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    mutate(buildingID = bID) %>%
     ts_round() %>%
+    energy() %>%
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
     session()
 }
 
@@ -189,6 +191,8 @@ grabWeather <- function(path){
   names(temp) <- c('Timestamp', 'Min_T', 'Max_T', 'Avg_T', 'INTERPOLATIVE_T', 'AvgSPH_T')
   names(humid) <- c('Timestamp', 'Min_H', 'Max_H', 'Avg_H', 'INTERPOLATIVE_H', 'AvgSPH_H') 
   merged <- merge(temp,humid, by = "Timestamp", all = TRUE)
+  
+  
   
   return(merged) 
 }
