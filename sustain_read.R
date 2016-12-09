@@ -181,6 +181,10 @@ session <- function(df){
   end_F16 <- as.numeric(as.POSIXct("12/17/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
   start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
   end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  
+  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
 
-  df <- ifelse()
+  df$semester <- ifelse((x < start_F16 && x > end_S16), 0, 1)
+  
+  return(df)
 }
