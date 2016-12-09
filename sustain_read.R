@@ -5,10 +5,10 @@
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
 suppressPackageStartupMessages(
-library(readxl)
-library(dplyr)
-library(purrr)
-library(data.table)
+library(readxl),
+library(dplyr),
+library(purrr),
+library(data.table),
 library(lubridate)
 )
 #### Round Timestamps ####
@@ -176,7 +176,10 @@ gooch <- read_build('Gooch 382 2382.xlsx', '2382')
 mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
 matSci <- read_build('Materials Science 0270.xlsx', '0270')
 pav <- read_build('Pav VII 0022.xlsx', '0022')
-  
+
+#### Combine into one data frame ####
+final <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
+
 #### Read Weather Data  ######
 
 grabWeather <- function(path){
@@ -194,21 +197,14 @@ grabWeather <- function(path){
   
   merged$Timestamp <- as.POSIXct(round(as.numeric(strptime(merged$Timestamp, 
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
+
+  merged <- mutate(merged, Hour = hour(merged$Timestamp)) %>% 
+            mutate(Date = format(merged$Timestamp,"%Y-%m-%d"))
   
-  return(merged) 
+  return(merged)
 }
 
 weather <- grabWeather('OA Data.xlsx')
 
-
-
-
-
-#### Combine into one data frame ####
-final <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
-
-
-
-
-
-
+####### MERGE WEATHER AND BUILDINGS #########
+final_2 <- merge(final, weather, x.all = T)
