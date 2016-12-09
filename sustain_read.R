@@ -17,6 +17,7 @@ library(data.table)
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
+  df$DayOfWeek<-as.POSIXlt(df$Timestamp)$wday + 1
   return(df)
 }
 
@@ -208,7 +209,7 @@ session <- function(df){
   
   x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
 
-  df$semester <- ifelse((x < start_F16 && x > end_S16), 0, 1)
+  df$semester <- ifelse((x < start_F13), 0, ifelse((x < start_S14 & x > end_F13), 0, )
   
   return(df)
 }
