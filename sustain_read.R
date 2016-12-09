@@ -192,7 +192,8 @@ grabWeather <- function(path){
   names(humid) <- c('Timestamp', 'Min_H', 'Max_H', 'Avg_H', 'INTERPOLATIVE_H', 'AvgSPH_H') 
   merged <- merge(temp,humid, by = "Timestamp", all = TRUE)
   
-  
+  merged$Timestamp <- as.POSIXct(round(as.numeric(strptime(merged$Timestamp, 
+                                                       '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
   
   return(merged) 
 }
