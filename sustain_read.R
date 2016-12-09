@@ -205,4 +205,4 @@ weather <- grabWeather('OA Data.xlsx')
 
 ####### MERGE WEATHER AND BUILDINGS #########
 
-final_2 <- merge(rice, weather, x.all = T)
+final_2 <- merge(final, weather, x.all = T)
