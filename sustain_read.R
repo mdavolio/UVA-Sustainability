@@ -105,7 +105,17 @@ building <- function(path){
   return(final)
 }
 
-rice <- building('Rice Hall 0214.xlsx') %>% 
+# Function of Fucntions
+read_b <- function(path){
+  df <- building(path) %>% 
+    mutate(buildingID = 0214) %>% 
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    ts_round()
+  return(df)
+}
+
+
+rice <- read_b('Rice Hall 0214.xlsx') 
   mutate(buildingID = 0214) %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
