@@ -105,38 +105,29 @@ building <- function(path){
   return(final)
 }
 
-# Function of Fucntions
-read_b <- function(path){
-  df <- building(path) %>% 
-    mutate(buildingID = 0214) %>% 
-    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-    ts_round()
-  return(df)
-}
 
-
-rice <- read_b('Rice Hall 0214.xlsx') 
-  mutate(buildingID = 0214) %>% 
+rice <- building('Rice Hall 0214.xlsx') %>%
+  mutate(buildingID = '0214') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 echols <- building('Echols 2213.xlsx') %>% 
-  mutate(buildingID = 2213) %>% 
+  mutate(buildingID = '2213') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 humphreys <- building('Humphreys 2214.xlsx') %>% 
-  mutate(buildingID = 2214) %>% 
+  mutate(buildingID = '2214') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 kellogg <- building('Kellogg 2368.xlsx') %>% 
-  mutate(buildingID = 2368) %>% 
+  mutate(buildingID = '2368') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
-  mutate(buildingID = 0201) %>% 
+  mutate(buildingID = '0201') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 physics <- building('Physics 0221.xlsx') %>% 
-  mutate(buildingID = 0221) %>% 
+  mutate(buildingID = '0221') %>% 
   merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
   ts_round()
 
