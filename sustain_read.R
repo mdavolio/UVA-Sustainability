@@ -11,9 +11,6 @@ library(purrr)
 library(data.table)
 
 #### Round Timestamps ####
-
-# Function to rounds timestamps to nearest quarter hour
-
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
                                                        '%Y-%m-%d %H:%M:%S'))/900) * 900, origin='1970-01-01')
@@ -21,6 +18,7 @@ ts_round <- function(df){
   return(df)
 }
 
+<<<<<<< HEAD
 #### Sum Energy Consumption ####
 
 ## first grab the hour from the timestamp
@@ -44,8 +42,9 @@ energy <- function(df) {
 }
 
 
+=======
+>>>>>>> adc66fc4e99001a2832777e5dbb8d1885499243e
 #### Read Building Info Data ####
-
 buildingInfo <- function(path){
   # Read in file
   df <- read_excel(path) %>% 
@@ -56,10 +55,40 @@ buildingInfo <- function(path){
 
 buildings <- buildingInfo('Basic Building Info.xlsx')
 
+##### convert start and end dates of semester to numeric
+session <- function(df){
+  start_F13 <- as.numeric(as.POSIXct("08/27/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F13 <- as.numeric(as.POSIXct("12/18/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S14 <- as.numeric(as.POSIXct("01/13/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S14 <- as.numeric(as.POSIXct("05/10/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F14 <- as.numeric(as.POSIXct("08/26/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F14 <- as.numeric(as.POSIXct("12/17/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S15 <- as.numeric(as.POSIXct("01/12/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S15 <- as.numeric(as.POSIXct("05/09/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F15 <- as.numeric(as.POSIXct("08/25/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F15 <- as.numeric(as.POSIXct("12/19/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S16 <- as.numeric(as.POSIXct("01/20/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S16 <- as.numeric(as.POSIXct("05/14/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_F16 <- as.numeric(as.POSIXct("08/23/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_F16 <- as.numeric(as.POSIXct("12/17/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
+  
+  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
+  
+  df$semester <- ifelse((x < start_F13), 0, 
+                        ifelse((x < start_S14 & x > end_F13), 0, 
+                               ifelse((x < start_F14 & x > end_S14), 0,
+                                      ifelse((x < start_S15 & x > end_F14), 0,
+                                             ifelse((x < start_F15 & x > end_S15), 0,
+                                                    ifelse((x < start_S16 & x > end_F15), 0,
+                                                           ifelse((x < start_F16 & x > end_S16), 0,
+                                                                  ifelse((x < start_S17 & x > end_F16), 0, 1))))))))
+  
+  return(df)
+}
 
 ##### Read Builiding Energy Data  #####
-
-
 building <- function(path){
   
   if(length(excel_sheets(path)) == 3){
@@ -128,56 +157,27 @@ building <- function(path){
   return(final)
 }
 
+read_build <- function(path, bID){
+  df <- building(path) %>%
+    mutate(buildingID = bID) %>% 
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    ts_round() %>%
+    session()
+}
 
-rice <- building('Rice Hall 0214.xlsx') %>%
-  mutate(buildingID = '0214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
-  ts_round()
-echols <- building('Echols 2213.xlsx') %>% 
-  mutate(buildingID = '2213') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE, all.y = FALSE) %>% 
-  ts_round()
-humphreys <- building('Humphreys 2214.xlsx') %>% 
-  mutate(buildingID = '2214') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-kellogg <- building('Kellogg 2368.xlsx') %>% 
-  mutate(buildingID = '2368') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-oHill_Din <- building('Ohill Dining 0201.xlsx') %>% 
-  mutate(buildingID = '0201') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-physics <- building('Physics 0221.xlsx') %>% 
-  mutate(buildingID = '0221') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-afc <- building('AFC 5271.xlsx') %>% 
-  mutate(buildingID = '5271') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-gilmer <- building('Gilmer 0210.xlsx') %>% 
-  mutate(buildingID = '0210') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-gooch <- building('Gooch 382 2382.xlsx') %>% 
-  mutate(buildingID = '2382') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-mechEng <- building('Mech Eng 0259.xlsx') %>% 
-  mutate(buildingID = '0259') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-matSci <- building('Materials Science 0270.xlsx') %>% 
-  mutate(buildingID = '0270') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-pav <- building('Pav VII 0022.xlsx') %>% 
-  mutate(buildingID = '0022') %>% 
-  merge(buildings, by = "buildingID", all.x = TRUE) %>% 
-  ts_round()
-
+rice <- read_build('Rice Hall 0214.xlsx','0214')
+echols <- read_build('Echols 2213.xlsx','2213')
+humphreys <- read_build('Humphreys 2214.xlsx','2214')
+kellogg <- read_build('Kellogg 2368.xlsx', '2214')
+oHill_Din <- read_build('Ohill Dining 0201.xlsx', '0201')
+physics <- read_build('Physics 0221.xlsx', '0221')
+afc <- read_build('AFC 5271.xlsx', '5271')
+gilmer <- read_build('Gilmer 0210.xlsx', '0210')
+gooch <- read_build('Gooch 382 2382.xlsx', '2382')
+mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
+matSci <- read_build('Materials Science 0270.xlsx', '0270')
+pav <- read_build('Pav VII 0022.xlsx', '0022')
+  
 #### Read Weather Data  ######
 
 grabWeather <- function(path){
@@ -197,41 +197,3 @@ grabWeather <- function(path){
 }
 
 weather <- grabWeather('OA Data.xlsx')
-
-
-#?seq.Date
-
-#winter2013<-seq(as.Date("2013-12-17"),as.Date("2014-01-10"), "day" )
-#summer2014<-seq(as.Date("2014-05-19"),as.Date("2014-08-26"), "day" )
-
-#x = as.Date(rice$Timestamp)
-
-               
-#test<-ifelse(x == winter2013,1,0)
-ifelse((5>2),print(1),print(2))
-
-# convert start and end dates of semester to numeric
-session <- function(df){
-  start_F13 <- as.numeric(as.POSIXct("08/27/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F13 <- as.numeric(as.POSIXct("12/18/2013  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S14 <- as.numeric(as.POSIXct("01/13/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S14 <- as.numeric(as.POSIXct("05/10/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F14 <- as.numeric(as.POSIXct("08/26/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F14 <- as.numeric(as.POSIXct("12/17/2014  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S15 <- as.numeric(as.POSIXct("01/12/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S15 <- as.numeric(as.POSIXct("05/09/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F15 <- as.numeric(as.POSIXct("08/25/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F15 <- as.numeric(as.POSIXct("12/19/2015  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S16 <- as.numeric(as.POSIXct("01/20/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S16 <- as.numeric(as.POSIXct("05/14/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_F16 <- as.numeric(as.POSIXct("08/23/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_F16 <- as.numeric(as.POSIXct("12/17/2016  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  start_S17 <- as.numeric(as.POSIXct("01/18/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  end_S17 <- as.numeric(as.POSIXct("05/13/2017  12:00:00 AM", format="%m/%d/%Y  %H:%M:%S %p"))
-  
-  x <- as.numeric(as.POSIXct(df$Timestamp, '%Y-%m-%d %H:%M:%S'))
-
-  df$semester <- ifelse((x < start_F13), 0, ifelse((x < start_S14 & x > end_F13), 0, )
-  
-  return(df)
-}
