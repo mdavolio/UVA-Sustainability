@@ -4,13 +4,13 @@
 
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
-
+suppressPackageStartupMessages(
 library(readxl)
 library(dplyr)
 library(purrr)
 library(data.table)
 library(lubridate)
-
+)
 #### Round Timestamps ####
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
@@ -199,3 +199,16 @@ grabWeather <- function(path){
 }
 
 weather <- grabWeather('OA Data.xlsx')
+
+
+
+
+
+#### Combine into one data frame ####
+final <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
+
+
+
+
+
+
