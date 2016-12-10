@@ -223,12 +223,14 @@ grabWeather2 <- function(path){
 weather_1 <- grabWeather('OA Data.xlsx')
 weather_2 <- grabWeather2('CvilleWeather.txt')
 
-####### MERGE WEATHER AND BUILDINGS #########
+####### MERGE WEATHER AND BUILDINGS & RANDOM CLEANING#########
 final <- merge(final_buildings, weather_1, x.all = T) %>% 
   merge(weather_2, by = 'Date', all.x = T) %>%
 
 remove <- c('Timestamp','buildingName')
 final <- final[ , !(names(final) %in% remove)]
+
+final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numeric(final$YearBuilt))
 
 #### Remove Unnecessary Things from Environment AND Save ####
 rm(list=setdiff(ls(), c("final")))
