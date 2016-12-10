@@ -86,7 +86,7 @@ session <- function(df){
   return(df)
 }
 
-##### Read Builiding Energy Data  #####
+#### Read Builiding Energy Data  #####
 building <- function(path){
   
   if(length(excel_sheets(path)) == 3){
@@ -155,7 +155,7 @@ building <- function(path){
   return(final)
 }
 
-# Function for all functions
+#### Function for all functions
 read_build <- function(path, bID){
   df <- building(path) %>%
     mutate(buildingID = bID) %>%
@@ -176,7 +176,6 @@ gilmer <- read_build('Gilmer 0210.xlsx', '0210')
 gooch <- read_build('Gooch 382 2382.xlsx', '2382')
 mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
 matSci <- read_build('Materials Science 0270.xlsx', '0270')
-pav <- read_build('Pav VII 0022.xlsx', '0022')
 
 #### Combine into one data frame ####
 final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
@@ -223,9 +222,14 @@ grabWeather2 <- function(path){
 weather_1 <- grabWeather('OA Data.xlsx')
 weather_2 <- grabWeather2('CvilleWeather.txt')
 
-####### MERGE WEATHER AND BUILDINGS #########
+####### MERGE WEATHER AND BUILDINGS & RANDOM CLEANING#########
 final <- merge(final_buildings, weather_1, x.all = T) %>% 
   merge(weather_2, by = 'Date', all.x = T)
+
+final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numeric(final$YearBuilt))
+
+remove <- c('Timestamp','buildingName','YearBuilt')
+final <- final[ , !(names(final) %in% remove)]
 
 #### Remove Unnecessary Things from Environment AND Save ####
 rm(list=setdiff(ls(), c("final")))
