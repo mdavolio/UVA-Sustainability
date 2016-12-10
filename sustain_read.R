@@ -5,12 +5,13 @@
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
 suppressPackageStartupMessages(
-library(readxl),
-library(dplyr),
-library(purrr),
-library(data.table),
+library(readxl)#,
+library(dplyr)#,
+library(purrr)#,
+library(data.table)#,
 library(lubridate)
 )
+
 #### Round Timestamps ####
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
@@ -204,7 +205,17 @@ grabWeather <- function(path){
   return(merged)
 }
 
-weather <- grabWeather('OA Data.xlsx')
+grabWeather2 <- function(path){
+  
+  df <- read.csv(path, header = TRUE, sep = ",") %>% 
+    select(c(1,5:7,11:23)) %>% 
+    mutate(Timestamp = as.POSIXct(EST, origin='1970-01-01')) %>% 
+    select(-c(1))
+
+  return(df)
+}
+weather_1 <- grabWeather('OA Data.xlsx')
+weather_2 <- grabWeather2('CvilleWeather.txt')
 
 ####### MERGE WEATHER AND BUILDINGS #########
-final_2 <- merge(final, weather, x.all = T)
+final <- merge(final, weather, x.all = T)
