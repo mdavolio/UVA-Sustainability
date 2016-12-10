@@ -226,3 +226,8 @@ weather_2 <- grabWeather2('CvilleWeather.txt')
 ####### MERGE WEATHER AND BUILDINGS #########
 final <- merge(final_buildings, weather_1, x.all = T) %>% 
   merge(weather_2, by = 'Date', all.x = T)
+
+#### Remove Unnecessary Things from Environment AND Save ####
+rm(list=setdiff(ls(), c("final")))
+save.image("sustain_read.RData")
+
