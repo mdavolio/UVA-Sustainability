@@ -209,7 +209,7 @@ grabWeather2 <- function(path){
   
   df <- read.csv(path, header = TRUE, sep = ",") %>% 
     select(c(1,5:7,11:23)) %>% 
-    mutate(Date = as.POSIXct(EST, origin='1970-01-01')) %>% 
+    mutate(Date = as.character(as.POSIXct(EST))) %>% 
     select(-c(1)) %>% 
     select(c(17,1:16)) %>% 
     mutate(Rain = ifelse(Events == "Fog-Rain" | Events == "Fog-Rain-Thunderstorm" | Events == "Rain" | Events == "Rain-Thunderstorm" | 
