@@ -86,7 +86,7 @@ session <- function(df){
   return(df)
 }
 
-##### Read Builiding Energy Data  #####
+#### Read Builiding Energy Data  #####
 building <- function(path){
   
   if(length(excel_sheets(path)) == 3){
@@ -155,7 +155,7 @@ building <- function(path){
   return(final)
 }
 
-# Function for all functions
+#### Function for all functions
 read_build <- function(path, bID){
   df <- building(path) %>%
     mutate(buildingID = bID) %>%
@@ -225,7 +225,10 @@ weather_2 <- grabWeather2('CvilleWeather.txt')
 
 ####### MERGE WEATHER AND BUILDINGS #########
 final <- merge(final_buildings, weather_1, x.all = T) %>% 
-  merge(weather_2, by = 'Date', all.x = T)
+  merge(weather_2, by = 'Date', all.x = T) %>%
+
+remove <- c('Timestamp','buildingName')
+final <- final[ , !(names(final) %in% remove)]
 
 #### Remove Unnecessary Things from Environment AND Save ####
 rm(list=setdiff(ls(), c("final")))
