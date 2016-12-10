@@ -178,7 +178,7 @@ mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
 matSci <- read_build('Materials Science 0270.xlsx', '0270')
 
 #### Combine into one data frame ####
-final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
+final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci)) 
 
 #### Read Weather Data  ######
 
