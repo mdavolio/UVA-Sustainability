@@ -225,12 +225,12 @@ weather_2 <- grabWeather2('CvilleWeather.txt')
 
 ####### MERGE WEATHER AND BUILDINGS & RANDOM CLEANING#########
 final <- merge(final_buildings, weather_1, x.all = T) %>% 
-  merge(weather_2, by = 'Date', all.x = T) %>%
-
-remove <- c('Timestamp','buildingName')
-final <- final[ , !(names(final) %in% remove)]
+  merge(weather_2, by = 'Date', all.x = T)
 
 final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numeric(final$YearBuilt))
+
+remove <- c('Timestamp','buildingName','YearBuilt')
+final <- final[ , !(names(final) %in% remove)]
 
 #### Remove Unnecessary Things from Environment AND Save ####
 rm(list=setdiff(ls(), c("final")))
