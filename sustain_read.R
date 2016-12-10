@@ -176,7 +176,6 @@ gilmer <- read_build('Gilmer 0210.xlsx', '0210')
 gooch <- read_build('Gooch 382 2382.xlsx', '2382')
 mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
 matSci <- read_build('Materials Science 0270.xlsx', '0270')
-pav <- read_build('Pav VII 0022.xlsx', '0022')
 
 #### Combine into one data frame ####
 final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
