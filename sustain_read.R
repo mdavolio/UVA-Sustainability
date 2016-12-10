@@ -4,13 +4,13 @@
 
 # Data Mining SYS 6018 Final Project
 # Code to read in and clean/wrangle the data into a useable format
-suppressPackageStartupMessages(
-library(readxl)#,
-library(dplyr)#,
-library(purrr)#,
-library(data.table)#,
+suppressPackageStartupMessages({
+library(readxl)
+library(dplyr)
+library(purrr)
+library(data.table)
 library(lubridate)
-)
+})
 
 #### Round Timestamps ####
 ts_round <- function(df){
@@ -179,7 +179,7 @@ matSci <- read_build('Materials Science 0270.xlsx', '0270')
 pav <- read_build('Pav VII 0022.xlsx', '0022')
 
 #### Combine into one data frame ####
-final <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
+final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci,pav)) 
 
 #### Read Weather Data  ######
 
@@ -209,13 +209,20 @@ grabWeather2 <- function(path){
   
   df <- read.csv(path, header = TRUE, sep = ",") %>% 
     select(c(1,5:7,11:23)) %>% 
-    mutate(Timestamp = as.POSIXct(EST, origin='1970-01-01')) %>% 
-    select(-c(1))
-
+    mutate(Date = as.POSIXct(EST, origin='1970-01-01')) %>% 
+    select(-c(1)) %>% 
+    select(c(17,1:16)) %>% 
+    mutate(Rain = ifelse(Events == "Fog-Rain" | Events == "Fog-Rain-Thunderstorm" | Events == "Rain" | Events == "Rain-Thunderstorm" | 
+                           Events == "Thunderstorm" | Events == "Fog-Rain-Snow" | Events == "Rain-Snow", 1, 0)) %>% 
+    mutate(Snow = ifelse(Events == "Fog-Rain-Snow" | Events == "Fog-Snow" | Events == "Rain-Snow" | Events == "Snow", 1, 0)) %>% 
+    select(-c(16))
+    
   return(df)
 }
+
 weather_1 <- grabWeather('OA Data.xlsx')
 weather_2 <- grabWeather2('CvilleWeather.txt')
 
 ####### MERGE WEATHER AND BUILDINGS #########
-final <- merge(final, weather, x.all = T)
+final <- merge(final_buildings, weather_1, x.all = T) %>% 
+  merge(weather_2, by = 'Date', all.x = T)
