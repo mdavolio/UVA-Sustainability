@@ -11,24 +11,58 @@ suppressPackageStartupMessages({
 ## Load in the R environment containing the full data, subsetted into training and testing sets
 load("sustain_read.RData")
 set.seed(12345)
-final.train.sub <- final.train[sample.int(nrow(final.train),size = 20000),]
-final.test.sub <- final.test[sample.int(nrow(final.test), size = 8000),]
-# Train on 2014-2015
-# Test on 2016
 
-## Build the forest
-energy.rf=randomForest(total_energy~square_foot+semester+ConstructionType+Category+INTERPOLATIVE_T+INTERPOLATIVE_H+MeanDew.PointF+
+final.train$e_per_sqft <- final.train$total_energy/final.train$square_foot
+final.test$e_per_sqft <- final.test$total_energy/final.test$square_foot
+# create subsets to tune parameters of the rf
+final.train.sub <- final.train[sample.int(nrow(final.train),size = 2000),]
+final.test.sub <- final.test[sample.int(nrow(final.test), size = 800),]
+
+
+## Build the forest over a range of tree sizes
+range <- seq(from = 100, to = 3000, by = 150)
+
+range %>% map(function(s){
+  randomForest(e_per_sqft~age+Hour+semester+ConstructionType+Category+INTERPOLATIVE_T+INTERPOLATIVE_H+MeanDew.PointF+
+                           Mean.Sea.Level.PressureIn+Mean.VisibilityMiles+Mean.Wind.SpeedMPH+
+                           CloudCover+WindDirDegrees+Rain+Snow,data=final.train.sub, mtry=4, importance=TRUE, 
+                           na.action=na.exclude, ntree = s) %>% 
+    get("mse",.) %>% 
+    mean()
+}) -> tuneTreeSize
+
+plot(range,tuneTreeSize) # determine the appropriate tree size
+tSize <- # best from above
+  
+## Build forest over a range of mtry (split variables) with ntree = tSize
+mtry.range <- seq(from = 3, to = 14, by = 1)
+mtry.range %>% map(function(s){
+  randomForest(e_per_sqft~age+Hour+semester+ConstructionType+Category+INTERPOLATIVE_T+INTERPOLATIVE_H+MeanDew.PointF+
+                 Mean.Sea.Level.PressureIn+Mean.VisibilityMiles+Mean.Wind.SpeedMPH+
+                 CloudCover+WindDirDegrees+Rain+Snow,data=final.train.sub, mtry=s, importance=TRUE, 
+               na.action=na.exclude, ntree = tSize) %>% 
+    get("mse",.) %>% 
+    mean()
+}) -> tuneTreeSplitPred
+
+plot(mtry.range,tuneTreeSplitPred)
+tMtry <- # best from above
+  
+## Now combine to a full random forest run with a larger training set/testing set on tuned parameters
+
+## Old attempt
+energy.rf=randomForest(e_per_sqft~semester+ConstructionType+Category+INTERPOLATIVE_T+INTERPOLATIVE_H+MeanDew.PointF+
                          Mean.Sea.Level.PressureIn+Mean.VisibilityMiles+Mean.Wind.SpeedMPH+
-                         CloudCover+WindDirDegrees+Rain+Snow,data=final.train.sub, mtry=5, importance=TRUE, 
-                       na.action=na.exclude) #mtry controls the number of predictors to use in each split
+                         CloudCover+WindDirDegrees+Rain+Snow,data=final.train.sub, mtry=3, importance=TRUE, 
+                       na.action=na.exclude, ntree = s) #mtry controls the number of predictors to use in each split, using sqrt(p)
 energy.rf
 
 
 ## lets check the test set performance
 yhat = predict(energy.rf,newdata=final.test.sub)
-plot(yhat,final.test.sub$total_energy)
+plot(yhat,final.test.sub$e_per_sqft)
 abline(0,1)
-mean((yhat-final.test.sub$total_energy)^2, na.rm = TRUE) # MSE = 8417607, very high
+mean((yhat-final.test.sub$e_per_sqft)^2, na.rm = TRUE) # MSE = 8417607, very high
 
 # look at the importance of each variable
 importance(energy.rf)
