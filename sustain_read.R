@@ -227,11 +227,14 @@ final <- merge(final_buildings, weather_1, x.all = T) %>%
   merge(weather_2, by = 'Date', all.x = T)
 
 final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numeric(final$YearBuilt))
-
+final$Date <- as.Date(final$Date)
+final$ConstructionType <- as.factor(final$ConstructionType)
+final$Category <- as.factor(final$Category)
 remove <- c('Timestamp','buildingName','YearBuilt')
 final <- final[ , !(names(final) %in% remove)]
-
+final.train <- final[final$Date < "2016-01-01",]
+final.test <- final[final$Date >= "2016-01-01",]
 #### Remove Unnecessary Things from Environment AND Save ####
-rm(list=setdiff(ls(), c("final")))
+rm(list=setdiff(ls(), c("final", "final.train", "final.test")))
 save.image("sustain_read.RData")
 
