@@ -230,8 +230,9 @@ final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numer
 final$Date <- as.Date(final$Date)
 final$ConstructionType <- as.factor(final$ConstructionType)
 final$Category <- as.factor(final$Category)
-remove <- c('Timestamp','buildingName','YearBuilt')
-final <- final[ , !(names(final) %in% remove)]
+remove <- c('buildingName','YearBuilt')
+final <- final[ , !(names(final) %in% remove)] %>%
+final <- final[!is.na(final$Date),]
 final.train <- final[final$Date < "2016-01-01",]
 final.test <- final[final$Date >= "2016-01-01",]
 #### Remove Unnecessary Things from Environment AND Save ####
