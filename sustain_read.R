@@ -230,12 +230,44 @@ final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numer
 final$Date <- as.Date(final$Date)
 final$ConstructionType <- as.factor(final$ConstructionType)
 final$Category <- as.factor(final$Category)
-remove <- c('buildingName','YearBuilt')
-final <- final[ , !(names(final) %in% remove)] %>%
-final <- final[!is.na(final$Date),]
-final.train <- final[final$Date < "2016-01-01",]
-final.test <- final[final$Date >= "2016-01-01",]
+final <- as.data.frame(final, order(final$Timestamp))
+remove <- c('Timestamp','buildingName','YearBuilt')
+final <- final[ , !(names(final) %in% remove)]
+
 #### Remove Unnecessary Things from Environment AND Save ####
 rm(list=setdiff(ls(), c("final", "final.train", "final.test")))
 save.image("sustain_read.RData")
 
+#### Conversion to MMBtu and separate source
+final$`electricity(mmbtu)` <- final$electricity * 0.00340951
+final$`steam(mmbtu)` <- final$steam * 1.04
+
+final[c('steam(mmbtu)', 'hot_water', 'cold_water')][is.na(final[c('steam(mmbtu)', 'hot_water', 'cold_water')])] <- 0
+
+final <- mutate(final, total_energy = `electricity(mmbtu)`+`steam(mmbtu)`+hot_water+cold_water) %>%
+
+
+if(final[,'Date'] <= '2013-12-31'){
+  final$coal = final$total_energy * .308
+  final$nat_gas = final$total_energy * .691
+  final$oil = final$total_energy * .001
+} else if(final[,'Date'] <= '2014-12-31'){
+  final$coal = final$total_energy * .424
+  final$nat_gas = final$total_energy * .552
+  final$oil = final$total_energy * .025
+} else if(final[,'Date'] <= '2015-12-31'){
+  final$coal = final$total_energy * .262
+  final$nat_gas = final$total_energy * .717
+  final$oil = final$total_energy * .022
+} else {
+  final$coal = final$total_energy * .217
+  final$nat_gas = final$total_energy * .779
+  final$oil = final$total_energy * .005
+}
+
+
+
+
+#### Training and Testing Split
+final.train <- final[final$Date < "2016-01-01",]
+final.test <- final[final$Date >= "2016-01-01",]
