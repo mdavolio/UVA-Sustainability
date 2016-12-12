@@ -12,6 +12,9 @@ library(data.table)
 library(lubridate)
 })
 
+# No scientific notation
+options(scipen=999)
+
 #### Round Timestamps ####
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
@@ -265,6 +268,7 @@ if(final[,'Date'] <= '2013-12-31'){
   final$oil = final$total_energy * .005
 }
 
+# convert mmbtu values to co2 output
 # co2 counts are in pounds of co2
 # oil was labeld as no.2 type
 # asumed coal was bituminous
