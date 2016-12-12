@@ -244,7 +244,7 @@ final$`steam(mmbtu)` <- final$steam * 1.04
 
 final[c('steam(mmbtu)', 'hot_water', 'cold_water')][is.na(final[c('steam(mmbtu)', 'hot_water', 'cold_water')])] <- 0
 
-final <- mutate(final, total_energy = `electricity(mmbtu)`+`steam(mmbtu)`+hot_water+cold_water) %>%
+final <- mutate(final, total_energy = `electricity(mmbtu)`+`steam(mmbtu)`+hot_water+cold_water)
 
 
 if(final[,'Date'] <= '2013-12-31'){
@@ -265,8 +265,15 @@ if(final[,'Date'] <= '2013-12-31'){
   final$oil = final$total_energy * .005
 }
 
+# co2 counts are in pounds of co2
+# oil was labeld as no.2 type
+# asumed coal was bituminous
+final$coal_co2 <- final$coal * 205.691
+final$nat_gas_co2 <- final$nat_gas * 116.999
+final$oil_co2 <- final$oil * 161.290
 
-
+# sum total co2 output
+final <- mutate(final, total_co2 = coal_co2 + nat_gas_co2 + oil_co2)
 
 #### Training and Testing Split
 final.train <- final[final$Date < "2016-01-01",]
