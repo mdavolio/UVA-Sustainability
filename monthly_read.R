@@ -44,7 +44,12 @@ buildings <- buildingInfo('Basic Building Info.xlsx') %>%
 # Perform a group_by an summarise to get monthly summary info
 monthly.bills %>% 
   group_by(Year, Month) %>% 
-  summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), nBuild = n_distinct(Building), total_cost = sum(Cost)) %>% 
+  summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), nBuild = n_distinct(Building), total_cost = sum(Cost)/100000) %>% 
   select(1,2,4,5,3,6) -> footprint
+
+# Exploratory Plots
+lines(footprint$MTeCO2, main = "Monthly Carbon Expense", xlab = "Month", ylab="MTeC02 Demand")
+lines(footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
+plot(footprint$total_cost, footprint$MTeCO2, main = "Cost Vs Carbon", xlab="Cost (per Hundred Thousand $$)", ylab = "MTeC02 Demand")
 
 
