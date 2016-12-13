@@ -24,7 +24,9 @@ buildingInfo <- function(path){
 }
 
 buildings <- buildingInfo('Basic Building Info.xlsx') %>% 
-  mutate(Building = factor(Building))
+  mutate(Building = factor(Building)) %>% 
+  mutate(Category = factor(Category)) %>% 
+  mutate(ConstructionType = factor(ConstructionType))
 
 # Read in monthly billing data and perform data type corrections, mutations, and selections
 monthly.bills <- read_excel('Building Billing History - West District.xlsx', col_names = TRUE) %>% 
@@ -42,11 +44,17 @@ monthly.bills <- read_excel('Building Billing History - West District.xlsx', col
   select(c(11,10,1:9)) %>% 
   merge(buildings, by = 'Building', all.x = TRUE)
 
-
 # Perform a group_by an summarise to get monthly summary info
 monthly.bills %>% 
   group_by(Year, Month) %>% 
-  summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), nBuild = n_distinct(Building), total_cost = sum(Cost)/100000) %>% 
+  summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), 
+            nBuild = n_distinct(Building), total_cost = sum(Cost)/100000,
+            sqft = sum(square_foot), athletic_num = n_distinct(Category == "Athletic"),
+            classroom_num = n_distinct(Category == "Classroom"),dining_num = n_distinct(Category == "Dining"),
+            housing_num = n_distinct(Category == "Housing"),office_num = n_distinct(Category == "Office"),
+            parking_num = n_distinct(Category == "Parking Garage"),patientCare_num = n_distinct(Category == "Patient Care"),
+            research_num = n_distinct(Category == "Research"),storage_num = n_distinct(Category == "Storage"),
+            support_num = n_distinct(Category == "Support")) %>% 
   select(1,2,4,5,3,6) -> footprint
 
 # Exploratory Plots
