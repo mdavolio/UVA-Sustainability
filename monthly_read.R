@@ -15,6 +15,17 @@ suppressPackageStartupMessages({
 # No scientific notation
 options(scipen=999)
 
+# Read in building info
+buildingInfo <- function(path){
+  df <- read_excel(path) %>% 
+    select(c(1,2,6,7,8,9))
+  names(df) <- c('Building','buildingName','square_foot','YearBuilt','ConstructionType','Category')
+  return(df) 
+}
+
+buildings <- buildingInfo('Basic Building Info.xlsx') %>% 
+  mutate(Building = factor(Building))
+
 # Read in monthly billing data and perform data type corrections, mutations, and selections
 monthly.bills <- read_excel('Building Billing History - West District.xlsx', col_names = TRUE) %>% 
   select(c(2:10,14)) %>% 
@@ -28,18 +39,9 @@ monthly.bills <- read_excel('Building Billing History - West District.xlsx', col
   mutate(Product = factor(Product)) %>% 
   mutate(Units = factor(Units)) %>% 
   select(-c(10)) %>% 
-  select(c(11,10,1:9))
+  select(c(11,10,1:9)) %>% 
+  merge(buildings, by = 'Building', all.x = TRUE)
 
-# Read in building info
-buildingInfo <- function(path){
-  df <- read_excel(path) %>% 
-    select(c(1,2,6,7,8,9))
-  names(df) <- c('Building','buildingName','square_foot','YearBuilt','ConstructionType','Category')
-  return(df) 
-}
-
-buildings <- buildingInfo('Basic Building Info.xlsx') %>% 
-  mutate(Building = factor(Building))
 
 # Perform a group_by an summarise to get monthly summary info
 monthly.bills %>% 
