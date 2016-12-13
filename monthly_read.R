@@ -10,6 +10,8 @@ suppressPackageStartupMessages({
   library(purrr)
   library(data.table)
   library(lubridate)
+  library(zoo)
+  library(stringr)
 })
 
 # No scientific notation
@@ -40,26 +42,22 @@ monthly.bills <- read_excel('Building Billing History - West District.xlsx', col
   mutate(PlantID = factor(PlantID)) %>% 
   mutate(Product = factor(Product)) %>% 
   mutate(Units = factor(Units)) %>% 
+  mutate(year_mon = as.yearmon(paste(str_sub(as.character(Year), start= -2), str_sub(as.character(BillDate),-5,-4), sep = ''), "%y%m")) %>% 
   select(-c(10)) %>% 
-  select(c(11,10,1:9)) %>% 
+  select(c(12,11,10,1:9)) %>% 
   merge(buildings, by = 'Building', all.x = TRUE)
 
 # Perform a group_by an summarise to get monthly summary info
 monthly.bills %>% 
-  group_by(Year, Month) %>% 
+  group_by(year_mon) %>% 
   summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), 
             nBuild = n_distinct(Building), total_cost = sum(Cost)/100000,
-            sqft = sum(square_foot), athletic_num = n_distinct(Category == "Athletic"),
-            classroom_num = n_distinct(Category == "Classroom"),dining_num = n_distinct(Category == "Dining"),
-            housing_num = n_distinct(Category == "Housing"),office_num = n_distinct(Category == "Office"),
-            parking_num = n_distinct(Category == "Parking Garage"),patientCare_num = n_distinct(Category == "Patient Care"),
-            research_num = n_distinct(Category == "Research"),storage_num = n_distinct(Category == "Storage"),
-            support_num = n_distinct(Category == "Support")) %>% 
+            sqft = sum(square_foot, na.rm = TRUE)) %>% 
   select(1,2,4,5,3,6) -> footprint
 
 # Exploratory Plots
-lines(footprint$MTeCO2, main = "Monthly Carbon Expense", xlab = "Month", ylab="MTeC02 Demand")
-lines(footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
+plot(footprint$year_mon, footprint$MTeCO2, main = "Monthly Carbon Expense", xlab = "Month", ylab="MTeC02 Demand")
+plot(footprint$year_mon, footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
 plot(footprint$total_cost, footprint$MTeCO2, main = "Cost Vs Carbon", xlab="Cost (per Hundred Thousand $$)", ylab = "MTeC02 Demand")
 
 
