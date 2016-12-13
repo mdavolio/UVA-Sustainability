@@ -12,6 +12,9 @@ library(data.table)
 library(lubridate)
 })
 
+# No scientific notation
+options(scipen=999)
+
 #### Round Timestamps ####
 ts_round <- function(df){
   df$Timestamp <- as.POSIXct(round(as.numeric(strptime(df$Timestamp, 
@@ -265,6 +268,7 @@ if(final[,'Date'] <= '2013-12-31'){
   final$oil = final$total_energy * .005
 }
 
+# convert mmbtu values to co2 output
 # co2 counts are in pounds of co2
 # oil was labeld as no.2 type
 # asumed coal was bituminous
@@ -274,6 +278,15 @@ final$oil_co2 <- final$oil * 161.290
 
 # sum total co2 output
 final <- mutate(final, total_co2 = coal_co2 + nat_gas_co2 + oil_co2)
+
+# Remove unnecessary columns
+remove <- c("electricity","steam","Min_T","Max_T","Avg_T","AvgSPH_T","Min_H",
+            "Max_H","Avg_H","AvgSPH_H","Max.Dew.PointF","Min.DewpointF",
+            "Max.Sea.Level.PressureIn","Min.Sea.Level.PressureIn","Max.VisibilityMiles",
+            "Min.VisibilityMiles","Max.Wind.SpeedMPH","Max.Gust.SpeedMPH")
+final <- final[ , !(names(final) %in% remove)]
+
+final$co2_per_sqft <- final$total_co2 / final$square_foot
 
 #### Training and Testing Split
 final.train <- final[final$Date < "2016-01-01",]
