@@ -43,13 +43,11 @@ monthly.bills <- read_excel('Building Billing History - West District.xlsx', col
   mutate(Product = factor(Product)) %>% 
   mutate(Units = factor(Units)) %>% 
   mutate(year_mon = as.yearmon(paste(str_sub(as.character(Year), start= -2), str_sub(as.character(BillDate),-5,-4), sep = ''), "%y%m")) %>% 
-  select(-c(10)) %>% 
-  select(c(12,11,10,1:9)) %>% 
   merge(buildings, by = 'Building', all.x = TRUE)
 
 # Perform a group_by an summarise to get monthly summary info
 monthly.bills %>% 
-  group_by(year_mon) %>% 
+  group_by(BillDate) %>% 
   summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), 
             nBuild = n_distinct(Building), total_cost = sum(Cost)/100000,
             sqft = sum(square_foot, na.rm = TRUE)) %>% 
