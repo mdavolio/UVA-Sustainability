@@ -30,4 +30,17 @@ monthly.bills <- read_excel('Building Billing History - West District.xlsx', col
   select(-c(10)) %>% 
   select(c(11,10,1:9))
 
+# Read in building info
+buildingInfo <- function(path){
+  df <- read_excel(path) %>% 
+    select(c(1,2,6,7,8,9))
+  names(df) <- c('Building','buildingName','square_foot','YearBuilt','ConstructionType','Category')
+  return(df) 
+}
+
+buildings <- buildingInfo('Basic Building Info.xlsx') %>% 
+  mutate(Building = factor(Building))
+
+
+
 
