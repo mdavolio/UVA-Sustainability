@@ -42,6 +42,20 @@ energy <- function(df) {
           summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s)) %>% 
           mutate(total_energy = electricity+steam), silent = T
   )
+  try(
+    df <- mutate(df, Hour = hour(df$Timestamp)) %>% 
+      mutate(Date = format(df$Timestamp,"%Y-%m-%d")) %>% 
+      group_by(buildingID,Date,Hour) %>% 
+      summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s), cold_water=sum(Interpolative_cw)) %>% 
+      mutate(total_energy = electricity+steam+cold_water), silent = T
+  )
+  try(
+    df <- mutate(df, Hour = hour(df$Timestamp)) %>% 
+      mutate(Date = format(df$Timestamp,"%Y-%m-%d")) %>% 
+      group_by(buildingID,Date,Hour) %>% 
+      summarise(electricity = sum(Interpolative_e), steam = sum(Interpolative_s), hot_water = sum(Interpolative_hw), cold_water=sum(Interpolative_cw)) %>% 
+      mutate(total_energy = electricity+steam+cold_water+hot_water), silent = T
+  )
   return(df)
 }
 
@@ -90,7 +104,8 @@ session <- function(df){
 }
 
 #### Read Builiding Energy Data  #####
-building <- function(path){
+# First Format
+building.1 <- function(path){
   
   if(length(excel_sheets(path)) == 3){
     # Read in Files
@@ -158,9 +173,92 @@ building <- function(path){
   return(final)
 }
 
+# Second Format
+building.2 <- function(path){
+  # Read in Files
+  e <- read_excel(path, sheet = 1) # Electricity
+  s <- read_excel(path, sheet = 2) # Steam
+  cw <- read_excel(path, sheet = 3) # Chilled Water
+  
+  # Remove incomplete observations
+  e <- e[complete.cases(e),]
+  s <- s[complete.cases(s),]
+  cw <- cw[complete.cases(cw),]
+  
+  # keep necessary columns
+  keep <- c(1,2,4,5,7,8,10)
+  
+  e <- e[, keep]
+  s <- s[, keep]
+  cw <- cw[, keep]
+  
+  # rename columns for ease
+  oldnames_e <- names(e)
+  newnames_e <- c('Timestamp','Min_e','Min_Time_e','Max_e','Max_Time_e','Avg_e','Interpolative_e')
+  setnames(e, oldnames_e, newnames_e)
+  
+  oldnames_s <- names(s)
+  newnames_s <- c('Timestamp','Min_s','Min_Time_s','Max_s','Max_Time_s','Avg_s','Interpolative_s')
+  setnames(s, oldnames_s, newnames_s)
+  
+  oldnames_cw <- names(cw)
+  newnames_cw <- c('Timestamp','Min_cw','Min_Time_cw','Max_cw','Max_Time_cw','Avg_cw','Interpolative_cw')
+  setnames(cw, oldnames_cw, newnames_cw)
+  
+  #merge
+  temp <- merge(e, s, by = 'Timestamp')
+  return(merge(temp, cw, by = 'Timestamp'))
+}
+
+# Third Format
+building.3 <- function(path){
+  # Read in Files
+  e <- read_excel(path, sheet = 1) # Electricity
+  s <- read_excel(path, sheet = 2) # Steam
+  hw <- read_excel(path, sheet = 3) # Chilled Water
+  cw <- read_excel(path, sheet = 4) # Chilled Water
+  
+  # Remove incomplete observations
+  e <- e[complete.cases(e),]
+  s <- s[complete.cases(s),]
+  hw <- hw[complete.cases(hw),]
+  cw <- cw[complete.cases(cw),]
+  
+  # keep necessary columns
+  keep <- c(1,2,4,5,7,8,10)
+  
+  e <- e[, keep]
+  s <- s[, keep]
+  hw <- hw[, keep]
+  cw <- cw[, keep]
+  
+  
+  # rename columns for ease
+  oldnames_e <- names(e)
+  newnames_e <- c('Timestamp','Min_e','Min_Time_e','Max_e','Max_Time_e','Avg_e','Interpolative_e')
+  setnames(e, oldnames_e, newnames_e)
+  
+  oldnames_s <- names(s)
+  newnames_s <- c('Timestamp','Min_s','Min_Time_s','Max_s','Max_Time_s','Avg_s','Interpolative_s')
+  setnames(s, oldnames_s, newnames_s)
+  
+  oldnames_cw <- names(cw)
+  newnames_cw <- c('Timestamp','Min_cw','Min_Time_cw','Max_cw','Max_Time_cw','Avg_cw','Interpolative_cw')
+  setnames(cw, oldnames_cw, newnames_cw)
+  
+  oldnames_hw <- names(hw)
+  newnames_hw <- c('Timestamp','Min_hw','Min_Time_hw','Max_hw','Max_Time_hw','Avg_hw','Interpolative_hw')
+  setnames(hw, oldnames_hw, newnames_hw)
+  
+  #merge
+  temp <- merge(e, s, by = 'Timestamp') %>% 
+    merge(hw, by = 'Timestamp')
+  return(merge(temp, cw, by = 'Timestamp'))
+}
+
 #### Function for all functions
-read_build <- function(path, bID){
-  df <- building(path) %>%
+read_build.1 <- function(path, bID){
+  df <- building.1(path) %>%
     mutate(buildingID = bID) %>%
     ts_round() %>%
     energy() %>%
@@ -168,20 +266,42 @@ read_build <- function(path, bID){
     session()
 }
 
-rice <- read_build('Rice Hall 0214.xlsx','0214')
-echols <- read_build('Echols 2213.xlsx','2213')
-humphreys <- read_build('Humphreys 2214.xlsx','2214')
-kellogg <- read_build('Kellogg 2368.xlsx', '2214')
-oHill_Din <- read_build('Ohill Dining 0201.xlsx', '0201')
-physics <- read_build('Physics 0221.xlsx', '0221')
-afc <- read_build('AFC 5271.xlsx', '5271')
-gilmer <- read_build('Gilmer 0210.xlsx', '0210')
-gooch <- read_build('Gooch 382 2382.xlsx', '2382')
-mechEng <- read_build('Mech Eng 0259.xlsx', '0259')
-matSci <- read_build('Materials Science 0270.xlsx', '0270')
+read_build.2 <- function(path, bID){
+  df <- building.2(path) %>%
+    mutate(buildingID = bID) %>%
+    ts_round() %>%
+    energy() %>%
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    session()
+}
+
+read_build.3 <- function(path, bID){
+  df <- building.3(path) %>%
+    mutate(buildingID = bID) %>%
+    ts_round() %>%
+    energy() %>%
+    merge(buildings, by = "buildingID", all.x = TRUE) %>% 
+    session()
+}
+
+# Normal format
+physics <- read_build.1('Physics 0221.xlsx', '0221')
+rice <- read_build.1('Rice Hall 0214.xlsx','0214')
+echols <- read_build.1('Echols 2213.xlsx','2213')
+humphreys <- read_build.1('Humphreys 2214.xlsx','2214')
+afc <- read_build.1('AFC 5271.xlsx', '5271')
+
+# Other format - Electricity, Steam, Chilled Water
+kellogg <- read_build.2('Kellogg 2368.xlsx', '2214')
+oHill_Din <- read_build.2('Ohill Dining 0201.xlsx', '0201')
+matSci <- read_build.2('Materials Science 0270.xlsx', '0270')
+gilmer <- read_build.2('Gilmer 0210.xlsx', '0210')
+
+# Other Format - Electricity, Steam, Hot Water, Chilled Water
+mechEng <- read_build.3('Mech Eng 0259.xlsx', '0259')
 
 #### Combine into one data frame ####
-final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,gooch,mechEng,matSci)) 
+final_buildings <- bind_rows(list(echols,humphreys,kellogg,oHill_Din,physics,rice,afc,gilmer,mechEng,matSci)) 
 
 #### Read Weather Data  ######
 
@@ -226,7 +346,7 @@ weather_1 <- grabWeather('OA Data.xlsx')
 weather_2 <- grabWeather2('CvilleWeather.txt')
 
 ####### MERGE WEATHER AND BUILDINGS & RANDOM CLEANING#########
-final <- merge(final_buildings, weather_1, x.all = T) %>% 
+final <- merge(final_buildings, weather_1, all.x = T) %>% 
   merge(weather_2, by = 'Date', all.x = T)
 
 final$age = (as.numeric(format(as.Date(final$Date, '%Y-%m-%d'),'%Y')) - as.numeric(final$YearBuilt))
@@ -238,8 +358,8 @@ remove <- c('Timestamp','buildingName','YearBuilt')
 final <- final[ , !(names(final) %in% remove)]
 
 #### Remove Unnecessary Things from Environment AND Save ####
-rm(list=setdiff(ls(), c("final", "final.train", "final.test")))
-save.image("sustain_read.RData")
+rm(list=setdiff(ls(), c("final")))
+
 
 #### Conversion to MMBtu and separate source
 final$`electricity(mmbtu)` <- final$electricity * 0.00340951
@@ -249,7 +369,7 @@ final[c('steam(mmbtu)', 'hot_water', 'cold_water')][is.na(final[c('steam(mmbtu)'
 
 final <- mutate(final, total_energy = `electricity(mmbtu)`+`steam(mmbtu)`+hot_water+cold_water)
 
-
+# Still concerned that this is taking the boolean result of the first row... and applying it
 if(final[,'Date'] <= '2013-12-31'){
   final$coal = final$total_energy * .308
   final$nat_gas = final$total_energy * .691
@@ -291,3 +411,7 @@ final$co2_per_sqft <- final$total_co2 / final$square_foot
 #### Training and Testing Split
 final.train <- final[final$Date < "2016-01-01",]
 final.test <- final[final$Date >= "2016-01-01",]
+
+#### Remove Unnecessary Things from Environment AND Save ####
+rm(list=setdiff(ls(), c("final", "final.train", "final.test")))
+save.image("sustain_read.RData")
