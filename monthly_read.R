@@ -63,4 +63,5 @@ plot(footprint$total_cost, footprint$MTeCO2, main = "Cost Vs Carbon", xlab="Cost
 # We need to get weather information and include in our footprint data frame
 # Must conduct research to determine what weather info to include
 
-
+# Save out RData file
+save.image("monthly_read.RData")
