@@ -60,4 +60,7 @@ plot(footprint$year_mon, footprint$MTeCO2, main = "Monthly Carbon Expense", xlab
 plot(footprint$year_mon, footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
 plot(footprint$total_cost, footprint$MTeCO2, main = "Cost Vs Carbon", xlab="Cost (per Hundred Thousand $$)", ylab = "MTeC02 Demand")
 
+# We need to get weather information and include in our footprint data frame
+# Must conduct research to determine what weather info to include
+
 
