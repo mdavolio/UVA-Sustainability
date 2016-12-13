@@ -41,6 +41,10 @@ buildingInfo <- function(path){
 buildings <- buildingInfo('Basic Building Info.xlsx') %>% 
   mutate(Building = factor(Building))
 
-
+# Perform a group_by an summarise to get monthly summary info
+monthly.bills %>% 
+  group_by(Year, Month) %>% 
+  summarise(MTeCO2 = sum(MTeCO2), nPlants = n_distinct(PlantID), nBuild = n_distinct(Building), total_cost = sum(Cost)) %>% 
+  select(1,2,4,5,3,6) -> footprint
 
 
