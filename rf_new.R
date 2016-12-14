@@ -14,11 +14,6 @@ suppressPackageStartupMessages({
 
 ### Random Forest
 
-# 10-fold cross validation, repeated 10 times
-cvControl <- trainControl(method = "repeatedCV",
-                          repeats = 10,
-                          number = 10)
-
 # Find best number of trees
 range <- seq(from = 100, to = 3000, by = 150)
 
@@ -34,22 +29,29 @@ plot(range,tuneTreeSize)
 
 # Set ntrees to 2050
 
-# Run random forest
+# 10-fold cross validation, repeated 10 times
+cvControl <- trainControl(method = "repeatedCV",
+                          repeats = 10,
+                          number = 10)
+# Run random forest 
 rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                   data = footprint,
                   method = 'rf',
                   ntree = 2050,
                   trControl = cvControl)
+# best mtry was 9
+# RMSE = 431.2622
+# R^2 = 0.6538438
+# Best Model MSE = 218978.1
+# % Var explained in best model = 50.09%
 
-# Time Series Random Forest
-
-# Create Time slices
+# Create Time slices for ts cross validation
 timeControl <- trainControl(method = 'timeslice',
                             initialWindow = 12,
                             horizon = 6,
                             fixedWindow = T)
 
-# training model
+# cv by time series
 rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'rf',
