@@ -82,20 +82,23 @@ lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum +
 # Only siginificant factor is AvgHum (p = 0.0160)
 # Adj-R-Squared = 0.4255
 
-# 
+# Time series cross validated lm
 
-# Create Time slices
+# Create Time slices for ts cross validation
+# Initial training window of 12 months, testing on next 6
+# Fixed, moving window
 timeControl <- trainControl(method = 'timeslice',
                             initialWindow = 12,
                             horizon = 6,
                             fixedWindow = T)
 
-# training model
+# linear model cv with time series
 lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
                    data = footprint,
                    method = 'lm',
                    trControl = timeControl)
 
+# Get same exact model as LOOCV
 
 ### Spline Model
 
