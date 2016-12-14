@@ -46,19 +46,25 @@ rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgT
 # % Var explained in best model = 50.09%
 
 # Create Time slices for ts cross validation
-# initial window 
+# Initial training window of 12 months, testing on next 6
+# Fixed, moving window
 timeControl <- trainControl(method = 'timeslice',
-                            initialWindow = 6,
-                            horizon = 3,
+                            initialWindow = 12,
+                            horizon = 6,
                             fixedWindow = T)
 
 # cv by time series
 rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'rf',
-                ntree = 1000,
+                ntree = 2050,
                 trControl = timeControl)
 
+# Best mtry = 9
+# RMSE = 398.2545
+# R-Squared = 0.4056453
+# Best model mse = 218038.1
+# % Var explained in best model = 50.30%
 
 ### Linear Model
 
