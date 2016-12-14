@@ -23,19 +23,23 @@ footprint.ts = ts(data = footprint$MTeCO2, start = c(2013, 7), end = c(2016, 6),
 monthplot(footprint.ts)
 
 # How do various time periods correlate? Plot autocorrelation to find out.
+png(filename = "TS_ACF.png")
 acf(footprint.ts, main = "Time Series Autocorrelation")
+dev.off()
 
 # Decompose time series into seasonal, trend, and random components.
 decomposition = decompose(footprint.ts)
+png(filename = "TS_Decomp.png")
 plot(decomposition)
+dev.off()
 
 # The random component of the decomposition shouldn't have any structure to it. Does it?
 acf(na.omit(decomposition$random))
 
 # Fit exponential smoothing model to data.
-holt.winters.fit = HoltWinters(footprint.ts, beta = FALSE, gamma = FALSE)
-plot(holt.winters.fit)
-holt.winters.fit$SSE
+#holt.winters.fit = HoltWinters(footprint.ts, beta = FALSE, gamma = FALSE)
+#plot(holt.winters.fit)
+#holt.winters.fit$SSE
 
 # An even better model:  Auto-regressive, integrated, moving average, with stepwise selection
 covariates <- footprint[,c(3,5,6,7,10,11,12)]
@@ -69,7 +73,18 @@ future.cov <- cbind(nBuild,nPlants) %>%
 names(future.cov)[1:3] <- c("nBuild","nPlants","sqft")
 
 forecast.2017 <- forecast.Arima(auto.arima.fit, xreg=future.cov)
-plot(forecast.2017$mean, main = "Time Series Forecast 2017", ylab = "Expected C02 Emission (MTeC02)")
 #seq(7,18,by=1)  %>% map(function(s){forecast.2017$mean  %>% nth(s)})  %>% unlist()  %>% sum()
 # 75516.59 MTeC02 projection for 2017
+
+# Final Plots
+png(filename = "TS_Prediction.png")
+par(mfrow=c(1,2))
+plot(auto.arima.fit$x, col = "red", main = "Observed vs Fitted", ylab = "C02 Emission (MTeC02)")  
+lines(fitted(auto.arima.fit), col = "blue")
+plot(forecast.2017$mean, main = "Forecast 2017", ylim = c(5200,8450), ylab = "Expected C02 Emission (MTeC02)")
+dev.off()
+
+
+
+
 
