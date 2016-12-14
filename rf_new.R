@@ -82,6 +82,9 @@ lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum +
 # Only siginificant factor is AvgHum (p = 0.0160)
 # Adj-R-Squared = 0.4255
 
+vif(lm.mod$finalModel)
+# Check VIF, all values under 4, doesn't appear to be any multicoliniarity
+
 # Time series cross validated lm
 
 # Create Time slices for ts cross validation
@@ -100,9 +103,11 @@ lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHu
 
 # Get same exact model as LOOCV
 
+
+
 ### Spline Model
 
-# 10-fold cross validation, repeated 10 times
+# LOO cross validation
 cvControl <- trainControl(method = "LOOCV")
 
 # Run random forest
