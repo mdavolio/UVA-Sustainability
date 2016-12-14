@@ -53,6 +53,16 @@ monthly.bills %>%
             sqft = sum(square_foot, na.rm = TRUE)) %>% 
   select(1,2,4,5,3,6) -> footprint
 
+
+# Percentage of month in which class is in session
+session <- as.data.frame(matrix(0, nrow = 36))
+session$V1 <- c(0,(4/31),1,1,1,(14/31),(19/31),1,(24/31),1,(9/31),0,0,(6/31),1,1,(16/31),
+              (20/31),1,(24/31),1,(8/31),0,0,(7/31),1,1,1,(18/31),(11/31),1,(24/31),
+              1,(13/31),0,0)
+
+footprint <- cbind(footprint, session)
+colnames(footprint)[7] <- "session"
+
 # Exploratory Plots
 plot(footprint$year_mon, footprint$MTeCO2, main = "Monthly Carbon Expense", xlab = "Month", ylab="MTeC02 Demand")
 plot(footprint$year_mon, footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
