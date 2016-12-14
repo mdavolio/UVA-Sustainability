@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
   library(randomForest)
   library(leaps)
   library(car)
+  library(earth)
 })
 
 
@@ -19,10 +20,10 @@ cvControl <- trainControl(method = "repeatedCV",
                           number = 10)
 
 # Run random forest
-rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgTemp + AvgHum,
+rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                   data = footprint,
                   method = 'rf',
-                  ntree = 850,
+                  ntree = 1000,
                   trControl = cvControl)
 
 # Time Series Random Forest
@@ -34,10 +35,10 @@ timeControl <- trainControl(method = 'timeslice',
                             fixedWindow = T)
 
 # training model
-rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + AvgTemp + AvgHum,
+rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'rf',
-                ntree = 850,
+                ntree = 1000,
                 trControl = timeControl)
 
 
@@ -47,7 +48,7 @@ rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + 
 cvControl <- trainControl(method = "LOOCV")
 
 # Run random forest
-lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum,
+lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'lm',
                 trControl = cvControl)
@@ -61,7 +62,33 @@ timeControl <- trainControl(method = 'timeslice',
                             fixedWindow = T)
 
 # training model
-lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum,
+lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
+                   data = footprint,
+                   method = 'lm',
+                   trControl = timeControl)
+
+
+### Spline Model
+
+# 10-fold cross validation, repeated 10 times
+cvControl <- trainControl(method = "LOOCV")
+
+# Run random forest
+spline.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
+                data = footprint,
+                method = 'earth',
+                trControl = cvControl)
+
+# Time Series Random Forest
+
+# Create Time slices
+timeControl <- trainControl(method = 'timeslice',
+                            initialWindow = 12,
+                            horizon = 6,
+                            fixedWindow = T)
+
+# training model
+lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
                    data = footprint,
                    method = 'lm',
                    trControl = timeControl)
