@@ -38,15 +38,16 @@ plot(holt.winters.fit)
 holt.winters.fit$SSE
 
 # An even better model:  Auto-regressive, integrated, moving average, with stepwise selection
+covariates <- footprint[,c(3,5,6,7,10,11,12)]
 auto.arima.fit = auto.arima(footprint.ts, d=NA, D=NA, max.p=5, max.q=5,
                             max.P=3, max.Q=3, max.order=10, max.d=3, max.D=3, 
                             start.p=1, start.q=1, start.P=1, start.Q=1, 
                             stationary=FALSE, seasonal=TRUE,
                             ic="aicc", stepwise=TRUE, trace=TRUE,
                             approximation=TRUE, 
-                            truncate=NULL, xreg=footprint[,c(3,5,6,7,10,11,12)],
+                            truncate=NULL, xreg=covariates,
                             test="kpss", seasonal.test="ocsb",
                             allowdrift=TRUE, allowmean=TRUE, lambda=NULL)
 
-mean(auto.arima.fit$residuals^2) # MSE = 67107.14
+mean(auto.arima.fit$residuals^2) # MSE = 48554.28
 
