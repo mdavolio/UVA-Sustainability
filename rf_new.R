@@ -15,10 +15,9 @@ cvControl <- trainControl(method = "repeatedCV",
                           number = 10)
 
 # Run random forest
-rf.mod <- train(MTeCO2 ~ nBuild + total_cost + nPlants + sqft + session,
+lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + Year + Month,
                   data = footprint,
-                  method = 'rf',
-                  ntree = 850,
+                  method = 'lm',
                   trControl = cvControl)
 
 # Time Series Random Forest
@@ -30,8 +29,7 @@ timeControl <- trainControl(method = 'timeslice',
                             fixedWindow = T)
 
 # training model
-rf.mod_ts <- train(MTeCO2 ~ nBuild + total_cost + nPlants + sqft + session,
+lm.mod_ts <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + AvgTemp + AvgHum,
                 data = footprint,
-                method = 'rf',
-                ntree = 850,
+                method = 'lm',
                 trControl = timeControl)
