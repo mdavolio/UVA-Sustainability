@@ -46,9 +46,10 @@ rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgT
 # % Var explained in best model = 50.09%
 
 # Create Time slices for ts cross validation
+# initial window 
 timeControl <- trainControl(method = 'timeslice',
-                            initialWindow = 12,
-                            horizon = 6,
+                            initialWindow = 6,
+                            horizon = 3,
                             fixedWindow = T)
 
 # cv by time series
