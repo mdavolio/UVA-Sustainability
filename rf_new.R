@@ -68,16 +68,21 @@ rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + 
 
 ### Linear Model
 
-# 10-fold cross validation, repeated 10 times
+# LOO Cross Validation
 cvControl <- trainControl(method = "LOOCV")
 
-# Run random forest
+# Linear Model w/ LOO CV
+# Year and Month removed as factors
 lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'lm',
                 trControl = cvControl)
 
-# Time Series Random Forest
+# RMSE = 576.7353
+# Only siginificant factor is AvgHum (p = 0.0160)
+# Adj-R-Squared = 0.4255
+
+# 
 
 # Create Time slices
 timeControl <- trainControl(method = 'timeslice',
