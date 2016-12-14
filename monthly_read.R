@@ -63,6 +63,12 @@ session$V1 <- c(0,(4/31),1,1,1,(14/31),(19/31),1,(24/31),1,(9/31),0,0,(6/31),1,1
 footprint <- cbind(footprint, session)
 colnames(footprint)[7] <- "session"
 
+# Add in weather data
+weather <- read.csv("Avg_Weather.csv", header = TRUE) %>% 
+  select(-c(1))
+
+footprint <- cbind(footprint,weather)
+
 # Exploratory Plots
 plot(footprint$year_mon, footprint$MTeCO2, main = "Monthly Carbon Expense", xlab = "Month", ylab="MTeC02 Demand")
 plot(footprint$year_mon, footprint$total_cost, main = "Monthly Expenditures", xlab = "Month", ylab="Cost (per Hundred Thousand $$)")
@@ -72,4 +78,5 @@ plot(footprint$total_cost, footprint$MTeCO2, main = "Cost Vs Carbon", xlab="Cost
 # Must conduct research to determine what weather info to include
 
 # Save out RData file
+rm(list=setdiff(ls(), c("footprint", "monthly.bills")))
 save.image("monthly_read.RData")
