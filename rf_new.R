@@ -105,27 +105,14 @@ lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHu
 
 
 
-### Spline Model
+### glm Model
 
 # LOO cross validation
 cvControl <- trainControl(method = "LOOCV")
 
-# Run random forest
-spline.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
+# Run glm
+glm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
                 data = footprint,
-                method = 'earth',
+                method = 'glm',
                 trControl = cvControl)
-
-# Time Series Random Forest
-
-# Create Time slices
-timeControl <- trainControl(method = 'timeslice',
-                            initialWindow = 12,
-                            horizon = 6,
-                            fixedWindow = T)
-
-# training model
-lm.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum + sumPrep,
-                   data = footprint,
-                   method = 'lm',
-                   trControl = timeControl)
+# GLM appears to give same model as OLS regression
