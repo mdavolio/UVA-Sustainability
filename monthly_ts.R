@@ -44,7 +44,7 @@ auto.arima.fit = auto.arima(footprint.ts, d=NA, D=NA, max.p=5, max.q=5,
                             stationary=FALSE, seasonal=TRUE,
                             ic="aicc", stepwise=TRUE, trace=TRUE,
                             approximation=TRUE, 
-                            truncate=NULL, xreg=footprint[,-c(1,2,4)],
+                            truncate=NULL, xreg=footprint[,c(3,5,6,7,10,11,12)],
                             test="kpss", seasonal.test="ocsb",
                             allowdrift=TRUE, allowmean=TRUE, lambda=NULL)
 
