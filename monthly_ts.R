@@ -23,7 +23,7 @@ footprint.ts = ts(data = footprint$MTeCO2, start = c(2013, 7), end = c(2016, 6),
 monthplot(footprint.ts)
 
 # How do various time periods correlate? Plot autocorrelation to find out.
-acf(footprint.ts)
+acf(footprint.ts, main = "Time Series Autocorrelation")
 
 # Decompose time series into seasonal, trend, and random components.
 decomposition = decompose(footprint.ts)
@@ -59,13 +59,17 @@ sqft <- as.data.frame(sample(c(38000000:38500000), size = 18, replace=TRUE))
 session <- as.data.frame(matrix(0, nrow = 18)) %>% 
   mutate(session = c(0,(9/31),1,1,1,(16/31),(13/31),1,(24/31),1,(12/31),0,0,(10/31),1,1,1,(15/31))) %>% 
   select(-c(1))
-
+futureWeather <- read.csv("FutureWeather.csv") %>% 
+  select(c(3,4,5))
 
 future.cov <- cbind(nBuild,nPlants) %>% 
   cbind(sqft) %>% 
   cbind(session) %>% 
-  
+  cbind(futureWeather)
+names(future.cov)[1:3] <- c("nBuild","nPlants","sqft")
+
 forecast.2017 <- forecast.Arima(auto.arima.fit, xreg=future.cov)
-
-
+plot(forecast.2017$mean, main = "Time Series Forecast 2017", ylab = "Expected C02 Emission (MTeC02)")
+#seq(7,18,by=1)  %>% map(function(s){forecast.2017$mean  %>% nth(s)})  %>% unlist()  %>% sum()
+# 75516.59 MTeC02 projection for 2017
 
