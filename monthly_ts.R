@@ -51,3 +51,21 @@ auto.arima.fit = auto.arima(footprint.ts, d=NA, D=NA, max.p=5, max.q=5,
 
 mean(auto.arima.fit$residuals^2) # MSE = 48554.28
 
+# FORECAST 2017
+
+nBuild <- as.data.frame(sample(c(136:141), size = 18, replace=TRUE))
+nPlants <- as.data.frame(sample(c(9:13), size = 18, replace=TRUE))
+sqft <- as.data.frame(sample(c(38000000:38500000), size = 18, replace=TRUE))
+session <- as.data.frame(matrix(0, nrow = 18)) %>% 
+  mutate(session = c(0,(9/31),1,1,1,(16/31),(13/31),1,(24/31),1,(12/31),0,0,(10/31),1,1,1,(15/31))) %>% 
+  select(-c(1))
+
+
+future.cov <- cbind(nBuild,nPlants) %>% 
+  cbind(sqft) %>% 
+  cbind(session) %>% 
+  
+forecast.2017 <- forecast.Arima(auto.arima.fit, xreg=future.cov)
+
+
+
