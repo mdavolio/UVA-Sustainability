@@ -19,11 +19,26 @@ cvControl <- trainControl(method = "repeatedCV",
                           repeats = 10,
                           number = 10)
 
+# Find best number of trees
+range <- seq(from = 100, to = 3000, by = 150)
+
+range %>% map(function(s){
+  randomForest(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
+               data=footprint, mtry=5, importance=TRUE, 
+               na.action=na.exclude, ntree = s) %>% 
+    get("mse",.) %>% 
+    mean()
+}) -> tuneTreeSize
+
+plot(range,tuneTreeSize)
+
+# Set ntrees to 2050
+
 # Run random forest
 rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
                   data = footprint,
                   method = 'rf',
-                  ntree = 1000,
+                  ntree = 2050,
                   trControl = cvControl)
 
 # Time Series Random Forest
