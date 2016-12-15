@@ -49,14 +49,14 @@ auto.arima.fit = auto.arima(footprint.ts, d=NA, D=NA, max.p=5, max.q=5,
                             stationary=FALSE, seasonal=TRUE,
                             ic="aicc", stepwise=TRUE, trace=TRUE,
                             approximation=TRUE, 
-                            truncate=NULL, xreg=covariates,
+                            xreg=covariates,
                             test="kpss", seasonal.test="ocsb",
                             allowdrift=TRUE, allowmean=TRUE, lambda=NULL)
 
 mean(auto.arima.fit$residuals^2) # MSE = 48554.28
 
 # FORECAST 2017
-
+set.seed(1234)
 nBuild <- as.data.frame(sample(c(136:141), size = 18, replace=TRUE))
 nPlants <- as.data.frame(sample(c(9:13), size = 18, replace=TRUE))
 sqft <- as.data.frame(sample(c(38000000:48500000), size = 18, replace=TRUE))
