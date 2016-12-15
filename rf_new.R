@@ -38,6 +38,7 @@ rf.mod <- train(MTeCO2 ~ nBuild + nPlants + sqft + session + Year + Month + AvgT
                   data = footprint,
                   method = 'rf',
                   ntree = 2050,
+                  importance = T,
                   trControl = cvControl)
 # best mtry was 9
 # RMSE = 431.2622
@@ -54,10 +55,11 @@ timeControl <- trainControl(method = 'timeslice',
                             fixedWindow = T)
 
 # cv by time series
-rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year + Month + AvgTemp + AvgHum + sumPrep,
+rf.mod_ts <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + Year +  AvgTemp + AvgHum + sumPrep,
                 data = footprint,
                 method = 'rf',
                 ntree = 2050,
+                importance = T,
                 trControl = timeControl)
 
 # Best mtry = 9
@@ -81,6 +83,7 @@ lm.mod <- train(MTeCO2 ~ nBuild +  nPlants + sqft + session + AvgTemp + AvgHum +
 # RMSE = 576.7353
 # Only siginificant factor is AvgHum (p = 0.0160)
 # Adj-R-Squared = 0.4255
+# mse = 201632.07
 
 vif(lm.mod$finalModel)
 # Check VIF, all values under 4, doesn't appear to be any multicoliniarity
