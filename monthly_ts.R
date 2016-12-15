@@ -59,7 +59,7 @@ mean(auto.arima.fit$residuals^2) # MSE = 48554.28
 
 nBuild <- as.data.frame(sample(c(136:141), size = 18, replace=TRUE))
 nPlants <- as.data.frame(sample(c(9:13), size = 18, replace=TRUE))
-sqft <- as.data.frame(sample(c(38000000:38500000), size = 18, replace=TRUE))
+sqft <- as.data.frame(sample(c(38000000:48500000), size = 18, replace=TRUE))
 session <- as.data.frame(matrix(0, nrow = 18)) %>% 
   mutate(session = c(0,(9/31),1,1,1,(16/31),(13/31),1,(24/31),1,(12/31),0,0,(10/31),1,1,1,(15/31))) %>% 
   select(-c(1))
